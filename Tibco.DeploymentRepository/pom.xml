@@ -91,7 +91,7 @@
 		<dependency>
 			<groupId>io.github.jiri-meluzin</groupId>
 			<artifactId>io.github.jiri-meluzin.lib.xml</artifactId>
-			<version>1.0.1</version>
+			<version>1.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
