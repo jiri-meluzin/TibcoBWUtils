@@ -80,6 +80,8 @@
     </parent>
     <modules>
         <module>Tibco.DeploymentRepository</module>
+        <module>Tibco.EARComparer</module>
+        <module>Tibco.Build</module>
         <!--<module>XML</module>-->
     </modules>               	
     <url>https://github.com/jiri-meluzin/FluentXMLLib</url>
