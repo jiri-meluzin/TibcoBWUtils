@@ -1,7 +1,7 @@
 package com.meluzin.tibcobwutils.build.versioning;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.nio.file.Paths;
 import java.util.List;
