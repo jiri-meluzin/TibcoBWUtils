@@ -1,0 +1,9 @@
+commit 650169407b275539922825a3c228f8385e365cf9
+Author: Jiří Meluzín <jiri.meluzin@vodafone.com>
+Date:   Mon Dec 3 14:41:14 2018 +0100
+
+    Test multi
+    line
+    comment
+
+R100	test2.txt	test2.txt.x

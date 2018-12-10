@@ -48,7 +48,7 @@ public final class BinExecutor {
 	}
 	public static BinExecutor exec(String exec, Optional<Duration> maxDuration, File directory) {
 		log.info(exec);
-		log.info("maxDuration: " + maxDuration);
+		if (maxDuration.isPresent()) log.info("maxDuration: " + maxDuration);
 		Process p;
 		Date started = new Date();
 		Instant startedAt = Instant.now();

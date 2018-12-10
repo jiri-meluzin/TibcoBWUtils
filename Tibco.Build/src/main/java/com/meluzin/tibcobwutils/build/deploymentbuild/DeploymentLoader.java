@@ -14,20 +14,38 @@ import com.meluzin.fluentxml.xml.builder.XmlBuilderFactory;
 import com.meluzin.functional.FileSearcher;
 
 public class DeploymentLoader {
-
 	
+	
+	private static final String GLOB_VCREPO_DAT = "glob:**/vcrepo.dat";
+	private static final String GLOB_LIBBUILDER = "glob:**/*.libbuilder";
+	private String globLibbuilder = GLOB_LIBBUILDER;
+	private String globVcrepoDat = GLOB_VCREPO_DAT;
+	
+	
+	public String getGlobLibbuilder() {
+		return globLibbuilder;
+	}
+	public void setGlobLibbuilder(String globLibbuilder) {
+		this.globLibbuilder = globLibbuilder;
+	}
+	public String getGlobVcrepoDat() {
+		return globVcrepoDat;
+	}
+	public void setGlobVcrepoDat(String globVcrepoDat) {
+		this.globVcrepoDat = globVcrepoDat;
+	}
+
 	public List<Deployment> loadDeployments(Path branchPath) {
-		XmlBuilderFactory fac = new XmlBuilderFactory();
 		FileSearcher search = new FileSearcher();
 		Map<String, Library> libraries = new HashMap<>();
 		Map<Path, Library> librariesFromPath = new HashMap<>();
 		List<Deployment> deployments = new ArrayList<>();
-		search.searchFiles(branchPath, "glob:**/*.libbuilder", true).forEach(p -> {
+		search.searchFiles(branchPath, globLibbuilder, true).forEach(p -> {
 			Library l = new Library(p, p.getFileName().toString().replace(".libbuilder", ".projlib"));
 			libraries.put(l.getName(), l);
 			librariesFromPath.put(p, l);
 		});
-		search.searchFiles(branchPath, "glob:**/vcrepo.dat", true).forEach(p -> {
+		search.searchFiles(branchPath, globVcrepoDat, true).forEach(p -> {
 			List<Library> dependencies = new ArrayList<>();
 			Path designtimelibs = p.getParent().resolve(".designtimelibs");
 			if (designtimelibs.toFile().exists()) {
@@ -49,7 +67,7 @@ public class DeploymentLoader {
 			
 			List<Path> archives = search.searchFiles(p.getParent(), "glob:**/*.archive", true);	
 			List<Library> declaredLibs =  
-					search.searchFiles(p.getParent(), "glob:**/*.libbuilder", true).stream().map(lp -> librariesFromPath.get(lp)).collect(Collectors.toList());
+					search.searchFiles(p.getParent(), globLibbuilder, true).stream().map(lp -> librariesFromPath.get(lp)).collect(Collectors.toList());
 				deployments.add(new Deployment(p.getParent(), dependencies, declaredLibs, archives));
 		});
 		

@@ -1,6 +1,6 @@
 grammar GITLogGrammer;
 
-createLog :	(commitRule)+ ;
+createLog :	(commitRule)+;
 commitRule:	
 	commitLine 
 	mergeLine? 
@@ -12,7 +12,7 @@ commitRule:
 	files?)? 
 	NEWLINE?
     ;
-files: (file NEWLINE)+;
+files: (file NEWLINE?)+;
 file: FILE;
 comments: (comment NEWLINE)+;
 comment: COMMENT;
