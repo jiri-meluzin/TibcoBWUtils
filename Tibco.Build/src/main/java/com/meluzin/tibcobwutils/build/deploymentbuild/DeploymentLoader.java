@@ -5,8 +5,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -35,11 +37,11 @@ public class DeploymentLoader {
 		this.globVcrepoDat = globVcrepoDat;
 	}
 
-	public List<Deployment> loadDeployments(Path branchPath) {
+	public Set<Deployment> loadDeployments(Path branchPath) {
 		FileSearcher search = new FileSearcher();
 		Map<String, Library> libraries = new HashMap<>();
 		Map<Path, Library> librariesFromPath = new HashMap<>();
-		List<Deployment> deployments = new ArrayList<>();
+		Set<Deployment> deployments = new HashSet<>();
 		search.searchFiles(branchPath, globLibbuilder, true).forEach(p -> {
 			Library l = new Library(p, p.getFileName().toString().replace(".libbuilder", ".projlib"));
 			libraries.put(l.getName(), l);

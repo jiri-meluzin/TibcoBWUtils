@@ -103,7 +103,7 @@ public class ChangeTracker {
 		NodeBuilder svnLog = fac.loadFromFile(svnLogPath);
 		NodeBuilder deploymentList = fac.loadFromFile(deploymentListPath);
 		Path svnBranchPath = Paths.get("/TIBCO/Branches").resolve(BRANCH);
-		List<Deployment> loadDeployments = new DeploymentLoader().loadDeployments(SOURCE_DIR);
+		Set<Deployment> loadDeployments = new DeploymentLoader().loadDeployments(SOURCE_DIR);
 		
 		
 		Set<String> availableProdEars = loadDeployments.
@@ -187,7 +187,7 @@ public class ChangeTracker {
 			stream().parallel().map(p -> T.V(p, INIT_BUILD_DIR.resolve(p.getFileName())));
 	}
 
-	public static List<T.V4<String, String, String, String>> getSVNLogForFile(String branch, NodeBuilder svnLog, List<Deployment> loadDeployments, Path ear, Path changedFile,
+	public static List<T.V4<String, String, String, String>> getSVNLogForFile(String branch, NodeBuilder svnLog, Set<Deployment> loadDeployments, Path ear, Path changedFile,
 			Path svnBranchPath) {
 		//System.out.println(ear + " " + changedFile);
 		String[] split = changedFile.toString().replace("\\", "/").split("!");
@@ -224,7 +224,7 @@ public class ChangeTracker {
 		return textContent == null ? null : textContent.trim();
 	}
 
-	public static Deployment getDeploymentFromEAR(List<Deployment> loadDeployments, Path ear) {
+	public static Deployment getDeploymentFromEAR(Set<Deployment> loadDeployments, Path ear) {
 		Optional<V2<Deployment, Path>> deployment = loadDeployments.stream().
 			map(d -> d.getDeclaredArchives().stream().map(a -> T.V(d, a))).
 			flatMap(s -> s).
@@ -235,7 +235,7 @@ public class ChangeTracker {
 		return depl;
 	}
 
-	public static List<Deployment> getDeploymentTree(List<Deployment> loadDeployments, Deployment depl) {
+	public static List<Deployment> getDeploymentTree(Set<Deployment> loadDeployments, Deployment depl) {
 		Stack<Deployment> toSearch = new Stack<Deployment>();
 		List<Deployment> found = new ArrayList<Deployment>();
 		toSearch.add(depl);
@@ -248,7 +248,7 @@ public class ChangeTracker {
 		return found;
 	}
 
-	public static List<Deployment> getDependentDeployments(List<Deployment> loadDeployments,
+	public static List<Deployment> getDependentDeployments(Set<Deployment> loadDeployments,
 			Deployment deployment) {
 		List<Library> dependencies = deployment.getDependencies();
 		List<Deployment> dependentDeployments = dependencies.stream().map(dl -> loadDeployments.stream().filter(d -> d.getDeclaredLibraries().contains(dl)).findFirst().get()).collect(Collectors.toList());

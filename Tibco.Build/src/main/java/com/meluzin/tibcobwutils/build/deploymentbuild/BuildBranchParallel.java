@@ -40,7 +40,7 @@ public class BuildBranchParallel {
 	private ForkJoinPool pool = new ForkJoinPool(10);
 	private boolean error = false;
 	private NodeBuilder changeLogSourceXml;
-	private List<Deployment> changedDeployments = new ArrayList<>();
+	private Set<Deployment> changedDeployments = new HashSet<>();
 	private Set<Deployment> rebuiltDeployments = new HashSet<>();
 	private Set<Library> rebuiltLibraries = new HashSet<>();
 	private Set<Library> changedLibraries = new HashSet<>();
@@ -117,14 +117,14 @@ public class BuildBranchParallel {
 		Optional<Path> buildLogXslPath = res.getString("build_log_xsl") != null ? Optional.of(Paths.get(res.getString("build_log_xsl"))) : Optional.empty();
 		Optional<Path> validationLogPath = res.getString("validation_log") != null ? Optional.of(Paths.get(res.getString("validation_log"))) : Optional.empty();
 		Path branchPath = Paths.get(source).toAbsolutePath();
-		List<Deployment> deployments =  new DeploymentLoader().loadDeployments(branchPath);
+		Set<Deployment> deployments =  new DeploymentLoader().loadDeployments(branchPath);
 		Integer parallelism = res.getInt("parallelism");
 
 		BuildBranchParallel b = new BuildBranchParallel(jobNumber, parallelism, branchPath, Paths.get(ears).toAbsolutePath(), Paths.get(libraries).toAbsolutePath(), Paths.get(oldLibraries).toAbsolutePath(), buildLogPath, validationLogPath, buildLogXslPath);
 		Set<String> changed = b.computeChangedDeployments(deployments, changeLogSource, changeLogConfig, branch);
-		b.build(deployments.stream().filter(d -> changed.contains(d.getName())).collect(Collectors.toList()), deployments);
+		b.build(deployments.stream().filter(d -> changed.contains(d.getName())).collect(Collectors.toSet()), deployments);
 	}
-	private Set<String> computeChangedDeployments(List<Deployment> deployments, Path changeLogSource, Path changeLogConfig, String branch) {
+	private Set<String> computeChangedDeployments(Set<Deployment> deployments, Path changeLogSource, Path changeLogConfig, String branch) {
 		
 		XmlBuilderFactory fac = new XmlBuilderFactory();
 		this.changeLogSourceXml = fac.loadFromFile(changeLogSource);
@@ -188,7 +188,7 @@ public class BuildBranchParallel {
 		this.validationLogPath = validationLogPath;
 		this.xslForBuildLogOutput = xslForBuildLogOutput;
 	}
-	public void build(List<Deployment> changedDeployments, List<Deployment> allDeployments) {
+	public void build(Set<Deployment> changedDeployments, Set<Deployment> allDeployments) {
 		buildLog.start();
 		this.changedDeployments = changedDeployments;
 		BuildTaskComputer btc = new BuildTaskComputer(allDeployments, changedDeployments);
@@ -274,7 +274,7 @@ public class BuildBranchParallel {
 	public NodeBuilder getChangeLogSourceXml() {
 		return changeLogSourceXml;
 	}
-	public List<Deployment> getChangedDeployments() {
+	public Set<Deployment> getChangedDeployments() {
 		return changedDeployments;
 	}
 	

@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 import com.meluzin.functional.Lists;
 
 public class BuildTaskComputer {
-	private Map<Library, List<Deployment>> libraryUsage;
+	private Map<Library, Set<Deployment>> libraryUsage;
 	private Map<Library, Deployment> librarySource;		
 	private Map<Deployment, Set<Deployment>> deploymentDependencies;
 
@@ -22,7 +22,7 @@ public class BuildTaskComputer {
 	private Set<Deployment> deploymentsToBuild = new HashSet<>();
 	private Set<Deployment> deploymentsCanBeBuilt = new HashSet<>();
 	
-	private List<Deployment> changedDeployments;
+	private Set<Deployment> changedDeployments;
 	private Set<Deployment> alreadyBuiltDeplyoments = new HashSet<>();
 
 	private BTCObservable deploymentsCanBeBuiltObservable = new BTCObservable();
@@ -40,7 +40,7 @@ public class BuildTaskComputer {
 			this.notifyObservers();
 		}
 	}
-	public BuildTaskComputer(List<Deployment> allDeployments, List<Deployment> changedDeployments) {
+	public BuildTaskComputer(Set<Deployment> allDeployments, Set<Deployment> changedDeployments) {
 		this.libraryUsage = getLibraryUsage(allDeployments);
 		this.librarySource = librarySource(allDeployments);		
 		this.deploymentDependencies = getDeploymentDependencies(allDeployments, librarySource);
@@ -75,7 +75,7 @@ public class BuildTaskComputer {
 		updateStatus(changedDeployments);
 	}
 
-	synchronized private Set<Deployment> updateStatus(List<Deployment> changedDeployments) {
+	synchronized private Set<Deployment> updateStatus(Set<Deployment> changedDeployments) {
 		deploymentsToBuild.clear();
 		deploymentsToBuild.addAll(changedDeployments);		
 		Set<Deployment> dependentDeployments = new HashSet<>(changedDeployments);
@@ -85,7 +85,7 @@ public class BuildTaskComputer {
 			dependentDeployments.forEach(d -> {
 				d.getDeclaredLibraries().forEach(l -> {					
 					if (!unchangedLibraries.contains(l)) {
-						deploymentsToRebuild.addAll(libraryUsage.getOrDefault(l, Lists.asList()));
+						deploymentsToRebuild.addAll(libraryUsage.getOrDefault(l, new HashSet<>()));
 					}
 				});
 				librariesToBuild.addAll(d.getDeclaredLibraries());
@@ -118,7 +118,7 @@ public class BuildTaskComputer {
 		return deploymentsCanBeBuilt;
 	}
 
-	private Map<Deployment, Set<Deployment>> getDeploymentDependencies(List<Deployment> allDeployments,
+	private Map<Deployment, Set<Deployment>> getDeploymentDependencies(Set<Deployment> allDeployments,
 			Map<Library, Deployment> librarySource) {
 		Map<Deployment, Set<Deployment>> deploymentDependencies = new HashMap<>();
 		
@@ -131,7 +131,7 @@ public class BuildTaskComputer {
 		return deploymentDependencies;
 	}
 
-	private Map<Library, Deployment> librarySource(List<Deployment> allDeployments) {
+	private Map<Library, Deployment> librarySource(Set<Deployment> allDeployments) {
 		Map<Library, Deployment> librarySource = new HashMap<>();
 		allDeployments.forEach(d -> {
 			d.getDeclaredLibraries().forEach(l -> {
@@ -145,11 +145,11 @@ public class BuildTaskComputer {
 		return librarySource.get(lib);
 	}
 
-	private Map<Library, List<Deployment>> getLibraryUsage(List<Deployment> allDeployments) {
-		Map<Library, List<Deployment>> libraryUsage = new HashMap<>();
+	private Map<Library, Set<Deployment>> getLibraryUsage(Set<Deployment> allDeployments) {
+		Map<Library, Set<Deployment>> libraryUsage = new HashMap<>();
 		allDeployments.forEach(d -> {
 			d.getDependencies().forEach(l -> {
-				if (!libraryUsage.containsKey(l)) libraryUsage.put(l, new ArrayList<>());
+				if (!libraryUsage.containsKey(l)) libraryUsage.put(l, new HashSet<>());
 				libraryUsage.get(l).add(d);
 			});
 		});
