@@ -25,7 +25,7 @@ public class BuildLogAnalyzer {
 	public BinExecutor getCodeValidation(List<BinExecutor> errorLog) {
 		if (errorLog == null) return null;
 		
-		return errorLog.stream().filter(b -> isCodeValidation(b)).findAny().get() ;		
+		return errorLog.stream().filter(b -> isCodeValidation(b)).findAny().orElse(null) ;		
 	}
 	public boolean containsCodeValidationErrors(List<BinExecutor> errorLog) {
 		BinExecutor b = getCodeValidation(errorLog);
