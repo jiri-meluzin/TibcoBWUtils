@@ -30,7 +30,7 @@ import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.Namespace;
 
-public class BuildBranchParallel {
+public class BuildBranchParallel implements BuildContext {
 	private static Logger log = Log.get();
 	private Optional<String> jobNumber = Optional.empty();
 	private Path sourceRoot;
@@ -271,11 +271,10 @@ public class BuildBranchParallel {
 			}).exec(pool, tasks);
 		});
 	}
-	public NodeBuilder getChangeLogSourceXml() {
+	public NodeBuilder getChangeLogXml() {
 		return changeLogSourceXml;
 	}
 	public Set<Deployment> getChangedDeployments() {
 		return changedDeployments;
 	}
-	
 }

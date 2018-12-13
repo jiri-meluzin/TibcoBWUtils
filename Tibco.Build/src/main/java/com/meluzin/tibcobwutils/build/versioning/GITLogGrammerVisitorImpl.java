@@ -23,8 +23,6 @@ import com.meluzin.tibcobwutils.build.versioning.GITLogGrammerParser.FileContext
 
 final class GITLogGrammerVisitorImpl extends GITLogGrammerBaseVisitor<List<ChangeInfo>> {
 	List<String> commits = new ArrayList<>();
-	XmlBuilderFactory fac = new XmlBuilderFactory();
-	NodeBuilder gitlog = fac.createRootElement("gitlog");
 	String author;
 	String hash;
 	Date date;
@@ -91,23 +89,6 @@ final class GITLogGrammerVisitorImpl extends GITLogGrammerBaseVisitor<List<Chang
 			
 		}).collect(Collectors.toList())).build();
 		result.add(changeInfo);
-		gitlog.addChild("commit").
-			addChild("revision").setTextContent(hash).getParent().
-			addChild("author").setTextContent(author).getParent().
-			addChild("date").setTextContent(date).getParent().
-			addChild("comment").setTextContent(comment).getParent().
-			addChild("files").addChildren(files, (f,n) -> {
-				String[] parts = f.split("\t");
-				n.addChild("file").
-					addAttribute("action", parts[0]).
-					setTextContent(parts[1]);
-				if (parts.length == 3) {
-					n.addChild("file").
-						addAttribute("action", parts[0]).
-						setTextContent(parts[2]);
-				}
-			});
-			
 			
 		commits.add(h);
 		return result;
@@ -131,4 +112,5 @@ final class GITLogGrammerVisitorImpl extends GITLogGrammerBaseVisitor<List<Chang
 			throw new RuntimeException("Could not create FileChangeInfo for " + Lists.asList(parts), e);
 		}
 	}
+	
 }

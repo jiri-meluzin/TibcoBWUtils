@@ -70,12 +70,12 @@ public class BuildLogRecorder {
 		}
 	}
 	
-	public NodeBuilder generateResult(BuildBranchParallel buildBranchParallel) {
+	public NodeBuilder generateResult(BuildContext buildBranchParallel) {
 		NodeBuilder result = initResult();
 		if (buildBranchParallel.getJobNumber().isPresent()) {
 			result.addAttribute("job", buildBranchParallel.getJobNumber().get());
 		}
-		result.appendChild(buildBranchParallel.getChangeLogSourceXml().copy().setName("svnLog"));
+		result.appendChild(buildBranchParallel.getChangeLogXml().copy().setName("sourceRepoLog"));
 		result.addChild("changedDeployments").addChildren(buildBranchParallel.getChangedDeployments(),(d,n)->n.addChild("deployment").setTextContent(d.getName()).addAttribute("path", d.getPath()));
 		Set<Deployment> deployments = Stream.concat( Stream.concat( validationLogs.keySet().stream(), deploymentArchive.keySet().stream()), deploymentLibrary.keySet().stream()).distinct().collect(Collectors.toSet());
 		
