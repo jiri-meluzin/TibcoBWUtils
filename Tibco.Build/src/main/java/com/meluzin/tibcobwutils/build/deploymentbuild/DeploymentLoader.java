@@ -44,7 +44,9 @@ public class DeploymentLoader {
 		Set<Deployment> deployments = new HashSet<>();
 		search.searchFiles(branchPath, globLibbuilder, true).forEach(p -> {
 			Library l = new Library(p, p.getFileName().toString().replace(".libbuilder", ".projlib"));
+			// TODO: use aliases file to create proper map
 			libraries.put(l.getName(), l);
+			libraries.put(l.getName().replace(".projlib", ""), l);
 			librariesFromPath.put(p, l);
 		});
 		search.searchFiles(branchPath, globVcrepoDat, true).forEach(p -> {
