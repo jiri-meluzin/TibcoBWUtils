@@ -54,7 +54,7 @@ public class DeploymentLoader {
 				try(Stream<String> designtimelibsLines = Files.lines(designtimelibs)) {
 	
 					dependencies.addAll(designtimelibsLines.
-		                //filter(s -> s.contains(".projlib")).
+		                filter(s -> s.contains("\\=")).
 		               
 		                map(s -> s.replaceAll("\\\\", "").split("=")).
 		                sorted((parts1, parts2) -> Integer.parseInt(parts1[0]) - Integer.parseInt(parts2[0])).
