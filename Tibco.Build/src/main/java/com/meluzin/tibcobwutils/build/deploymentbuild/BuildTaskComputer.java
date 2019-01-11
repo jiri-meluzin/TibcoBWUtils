@@ -8,11 +8,14 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Set;
 import java.util.concurrent.ForkJoinPool;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import com.meluzin.functional.Lists;
+import com.meluzin.functional.Log;
 
 public class BuildTaskComputer {
+	private static Logger log = Log.get();
 	private Map<Library, Set<Deployment>> libraryUsage;
 	private Map<Library, Deployment> librarySource;		
 	private Map<Deployment, Set<Deployment>> deploymentDependencies;
@@ -59,6 +62,7 @@ public class BuildTaskComputer {
 	}
 	
 	synchronized public void libraryBuilt(Library lib, boolean changed) {
+		log.info("Library " + lib + " from " + lib.getPath() + " has been built");
 		finishedLibraries.add(lib);
 		if (!changed) {
 			unchangedLibraries.add(lib);
@@ -67,6 +71,7 @@ public class BuildTaskComputer {
 	}
 	
 	synchronized public void deplyomentBuilt(Deployment deployment) {
+		log.info("Deployment " + deployment + " has been built");
 		alreadyBuiltDeplyoments.add(deployment);
 		getPool().execute(() -> updateStatus(changedDeployments));
 	}
@@ -94,6 +99,7 @@ public class BuildTaskComputer {
 			dependentDeployments.clear();
 			dependentDeployments.addAll(deploymentsToRebuild);
 		}
+		log.info("Deployments should be rebuild: " + dependentDeployments);
 		Set<Deployment> newDeploymentCanBeBuilt = deploymentsToBuild.stream().
 				// select deplyoments that does not depend on other deployment to build
 				filter(d -> !alreadyBuiltDeplyoments.contains(d)).
@@ -108,6 +114,7 @@ public class BuildTaskComputer {
 				// select only deplyoments that have not beed built yet
 				//filter(d -> !alreadyBuiltDeplyoments.contains(d)).				
 				collect(Collectors.toSet());
+		log.info("Deployments can be rebuild: " + newDeploymentCanBeBuilt);
 		if (!newDeploymentCanBeBuilt.equals(deploymentsCanBeBuilt)) {
 			this.deploymentsCanBeBuilt = newDeploymentCanBeBuilt;
 			getPool().execute(() -> deploymentsCanBeBuiltObservable.setNewValueAndNotify(newDeploymentCanBeBuilt));
