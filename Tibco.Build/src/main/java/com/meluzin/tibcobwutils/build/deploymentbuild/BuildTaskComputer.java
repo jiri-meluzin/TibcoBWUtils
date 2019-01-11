@@ -81,6 +81,9 @@ public class BuildTaskComputer {
 	}
 
 	synchronized private Set<Deployment> updateStatus(Set<Deployment> changedDeployments) {
+		log.info("Changed deployments: " + changedDeployments);
+		log.info("Unchanged libraries: " + unchangedLibraries);
+		log.info("Library usage: " + libraryUsage);
 		deploymentsToBuild.clear();
 		deploymentsToBuild.addAll(changedDeployments);		
 		Set<Deployment> dependentDeployments = new HashSet<>(changedDeployments);
