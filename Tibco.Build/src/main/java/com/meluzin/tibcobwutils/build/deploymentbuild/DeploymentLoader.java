@@ -8,14 +8,19 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.meluzin.fluentxml.xml.builder.XmlBuilderFactory;
 import com.meluzin.functional.FileSearcher;
+import com.meluzin.functional.Log;
 
 public class DeploymentLoader {
+	private static Logger log = Log.get();
 	
 	
 	private static final String GLOB_VCREPO_DAT = "glob:**/vcrepo.dat";
@@ -36,17 +41,18 @@ public class DeploymentLoader {
 	public void setGlobVcrepoDat(String globVcrepoDat) {
 		this.globVcrepoDat = globVcrepoDat;
 	}
-
-	public Set<Deployment> loadDeployments(Path branchPath) {
+	
+	public Set<Deployment> loadDeployments(Path branchPath, Function<Path, String> aliasProducer) {
 		FileSearcher search = new FileSearcher();
 		Map<String, Library> libraries = new HashMap<>();
 		Map<Path, Library> librariesFromPath = new HashMap<>();
 		Set<Deployment> deployments = new HashSet<>();
 		search.searchFiles(branchPath, globLibbuilder, true).forEach(p -> {
-			Library l = new Library(p, p.getFileName().toString().replace(".libbuilder", ".projlib"));
-			// TODO: use aliases file to create proper map
+			Library l = new Library(p, aliasProducer.apply(p));
+
+			log.fine("Found libbuilder " + l.getName() + " " + l.getPath());
+			if (l.getName() == null) throw new RuntimeException("Could not resolve libbuilder " + p);
 			libraries.put(l.getName(), l);
-			libraries.put(l.getName().replace(".projlib", ""), l);
 			librariesFromPath.put(p, l);
 		});
 		search.searchFiles(branchPath, globVcrepoDat, true).forEach(p -> {
@@ -61,7 +67,9 @@ public class DeploymentLoader {
 		                map(s -> s.replaceAll("\\\\", "").split("=")).
 		                sorted((parts1, parts2) -> Integer.parseInt(parts1[0]) - Integer.parseInt(parts2[0])).
 		                map(parts -> parts[1]).
-		                map(name -> libraries.get(name)).
+		                map(name -> findLibrary(libraries, name)).
+		                filter(l -> l.isPresent()).
+		                map(l -> l.get()).
 		                collect(Collectors.toList()));
 					
 				} catch (IOException e) {
@@ -79,5 +87,12 @@ public class DeploymentLoader {
 		
 		return deployments;
 		
+	}
+	private Optional<Library> findLibrary(Map<String, Library> libraries, String name) {
+		Library foundLibrary = libraries.get(name);
+		if (foundLibrary == null) {
+			log.fine("No library found for: " + name);
+		}
+		return Optional.ofNullable(foundLibrary);
 	}
 }

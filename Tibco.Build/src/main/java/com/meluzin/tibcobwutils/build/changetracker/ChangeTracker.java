@@ -103,7 +103,7 @@ public class ChangeTracker {
 		NodeBuilder svnLog = fac.loadFromFile(svnLogPath);
 		NodeBuilder deploymentList = fac.loadFromFile(deploymentListPath);
 		Path svnBranchPath = Paths.get("/TIBCO/Branches").resolve(BRANCH);
-		Set<Deployment> loadDeployments = new DeploymentLoader().loadDeployments(SOURCE_DIR);
+		Set<Deployment> loadDeployments = new DeploymentLoader().loadDeployments(SOURCE_DIR,  p -> p.getFileName().toString().replace(".libbuilder", ".projlib"));
 		
 		
 		Set<String> availableProdEars = loadDeployments.

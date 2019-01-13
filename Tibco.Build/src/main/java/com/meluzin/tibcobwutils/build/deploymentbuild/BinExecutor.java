@@ -13,6 +13,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -111,7 +112,7 @@ public final class BinExecutor {
 				return new BinExecutor(exec, 255, null, "Thread has been interrupted", started, new Date());					
 			}
 			else {
-				e.printStackTrace();
+				log.log(Level.INFO, "Unkown error when running "  + exec,  e);
 				return new BinExecutor(exec, 254, null, "Unknown error: " + e.getMessage(), started, new Date());
 			}
 		}
