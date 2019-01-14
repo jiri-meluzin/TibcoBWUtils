@@ -42,18 +42,18 @@ public class DeploymentLoader {
 		this.globVcrepoDat = globVcrepoDat;
 	}
 	
-	public Set<Deployment> loadDeployments(Path branchPath, Function<Path, String> aliasProducer) {
+	public Set<Deployment> loadDeployments(Path branchPath, Function<Path, Library> libraryProducer) {
 		FileSearcher search = new FileSearcher();
 		Map<String, Library> libraries = new HashMap<>();
-		Map<Path, Library> librariesFromPath = new HashMap<>();
+		Map<Path, Library> librariesFromSourcePath = new HashMap<>();
 		Set<Deployment> deployments = new HashSet<>();
 		search.searchFiles(branchPath, globLibbuilder, true).forEach(p -> {
-			Library l = new Library(p, aliasProducer.apply(p));
+			Library l = libraryProducer.apply(p);
 
-			log.fine("Found libbuilder " + l.getName() + " " + l.getPath());
+			log.fine("Found libbuilder " + l.getName() + " " + l.getSourcePath());
 			if (l.getName() == null) throw new RuntimeException("Could not resolve libbuilder " + p);
 			libraries.put(l.getName(), l);
-			librariesFromPath.put(p, l);
+			librariesFromSourcePath.put(p, l);
 		});
 		search.searchFiles(branchPath, globVcrepoDat, true).forEach(p -> {
 			List<Library> dependencies = new ArrayList<>();
@@ -79,7 +79,7 @@ public class DeploymentLoader {
 			
 			List<Path> archives = search.searchFiles(p.getParent(), "glob:**/*.archive", true);	
 			List<Library> declaredLibs =  
-					search.searchFiles(p.getParent(), globLibbuilder, true).stream().map(lp -> librariesFromPath.get(lp)).collect(Collectors.toList());
+					search.searchFiles(p.getParent(), globLibbuilder, true).stream().map(lp -> librariesFromSourcePath.get(lp)).collect(Collectors.toList());
 				deployments.add(new Deployment(p.getParent(), dependencies, declaredLibs, archives));
 		});
 		

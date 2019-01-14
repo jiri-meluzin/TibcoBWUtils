@@ -32,7 +32,7 @@ public class TaskBuildLibrary implements Task {
 		Deployment deployment = btc.getLibrarySource(library);
 		Path tmpProjlib = buildBranchParallel.getLibraries().resolve(library.getName() + ".tmp.projlib");
 		String exec = String.format("buildlibrary -lib %s -p %s -o %s -x -s -a %s", 
-				Paths.get("/").resolve(deployment.getPath().relativize(library.getPath())), // relative path to projlib inside deployment  
+				Paths.get("/").resolve(deployment.getPath().relativize(library.getSourcePath().get())), // relative path to projlib inside deployment  
 				deployment.getPath(), 											      // absolute path to deployment source
 				tmpProjlib,                      // absolute path to built library output
 				buildBranchParallel.getLibraries().resolve(library.getName().replace(".projlib", ".designtimelibs")) // absolute path to aliases file (TibLibBuilderDep calls it designtimelibs)

@@ -117,10 +117,20 @@ public class BuildBranchParallel implements BuildContext {
 		Optional<Path> buildLogXslPath = res.getString("build_log_xsl") != null ? Optional.of(Paths.get(res.getString("build_log_xsl"))) : Optional.empty();
 		Optional<Path> validationLogPath = res.getString("validation_log") != null ? Optional.of(Paths.get(res.getString("validation_log"))) : Optional.empty();
 		Path branchPath = Paths.get(source).toAbsolutePath();
-		Set<Deployment> deployments =  new DeploymentLoader().loadDeployments(branchPath, p -> p.getFileName().toString().replace(".libbuilder", ".projlib"));
+		Path librariesAbsolutePath = Paths.get(libraries).toAbsolutePath();
+		Set<Deployment> deployments =  new DeploymentLoader().loadDeployments(branchPath, p -> {
+			String name = p.getFileName().toString().replace(".libbuilder", "");			
+			String projlibName = name+".projlib";
+			return new Library(
+							Optional.of(librariesAbsolutePath.resolve(projlibName)),
+							Optional.of(p),
+							Optional.of(projlibName),
+							name
+						);	
+		});
 		Integer parallelism = res.getInt("parallelism");
 
-		BuildBranchParallel b = new BuildBranchParallel(jobNumber, parallelism, branchPath, Paths.get(ears).toAbsolutePath(), Paths.get(libraries).toAbsolutePath(), Paths.get(oldLibraries).toAbsolutePath(), buildLogPath, validationLogPath, buildLogXslPath);
+		BuildBranchParallel b = new BuildBranchParallel(jobNumber, parallelism, branchPath, Paths.get(ears).toAbsolutePath(), librariesAbsolutePath, Paths.get(oldLibraries).toAbsolutePath(), buildLogPath, validationLogPath, buildLogXslPath);
 		Set<String> changed = b.computeChangedDeployments(deployments, changeLogSource, changeLogConfig, branch);
 		b.build(deployments.stream().filter(d -> changed.contains(d.getName())).collect(Collectors.toSet()), deployments);
 	}

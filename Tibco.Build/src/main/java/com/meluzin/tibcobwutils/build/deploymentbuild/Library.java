@@ -1,34 +1,47 @@
 package com.meluzin.tibcobwutils.build.deploymentbuild;
 
 import java.nio.file.Path;
+import java.util.Optional;
 
 public final class Library {
-	private Path path;
+	private Optional<Path> outputPath;
+	private Optional<Path> sourcePath;
+	private Optional<String> alias;
 	private String name;
 	
-	public Library(Path path, String name) {
+	public Library(Optional<Path> outputPath, Optional<Path> sourcePath, Optional<String> alias, String name) {
 		super();
-		this.path = path;
+		this.outputPath = outputPath;
+		this.sourcePath = sourcePath;
+		this.alias = alias;
 		this.name = name;
 	}
 	public String getName() {
 		return name;
 	}
-	public Path getPath() {
-		return path;
+	public Optional<Path> getSourcePath() {
+		return sourcePath;
+	}
+	
+	public Optional<String> getAlias() {
+		return alias;
+	}
+	public Optional<Path> getOutputPath() {
+		return outputPath;
 	}
 	
 	@Override
 	public String toString() {
 		return getName();
 	}
-	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + ((alias == null) ? 0 : alias.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((path == null) ? 0 : path.hashCode());
+		result = prime * result + ((outputPath == null) ? 0 : outputPath.hashCode());
+		result = prime * result + ((sourcePath == null) ? 0 : sourcePath.hashCode());
 		return result;
 	}
 	@Override
@@ -40,18 +53,30 @@ public final class Library {
 		if (getClass() != obj.getClass())
 			return false;
 		Library other = (Library) obj;
+		if (alias == null) {
+			if (other.alias != null)
+				return false;
+		} else if (!alias.equals(other.alias))
+			return false;
 		if (name == null) {
 			if (other.name != null)
 				return false;
 		} else if (!name.equals(other.name))
 			return false;
-		if (path == null) {
-			if (other.path != null)
+		if (outputPath == null) {
+			if (other.outputPath != null)
 				return false;
-		} else if (!path.equals(other.path))
+		} else if (!outputPath.equals(other.outputPath))
+			return false;
+		if (sourcePath == null) {
+			if (other.sourcePath != null)
+				return false;
+		} else if (!sourcePath.equals(other.sourcePath))
 			return false;
 		return true;
 	}
+	
+	
 	
 	
 }

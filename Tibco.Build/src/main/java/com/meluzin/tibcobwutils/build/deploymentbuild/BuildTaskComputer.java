@@ -62,7 +62,7 @@ public class BuildTaskComputer {
 	}
 	
 	synchronized public void libraryBuilt(Library lib, boolean changed) {
-		log.info("Library " + lib + " from " + lib.getPath() + " has been built");
+		log.info("Library " + lib + " from " + lib.getSourcePath() + " has been built");
 		finishedLibraries.add(lib);
 		if (!changed) {
 			unchangedLibraries.add(lib);
