@@ -102,7 +102,7 @@ public class BuildTaskComputer {
 			dependentDeployments.clear();
 			dependentDeployments.addAll(deploymentsToRebuild);
 		}
-		log.info("Deployments should be rebuild: " + dependentDeployments);
+		log.info("All deployments that should be build: " + deploymentsToBuild);
 		Set<Deployment> newDeploymentCanBeBuilt = deploymentsToBuild.stream().
 				// select deplyoments that does not depend on other deployment to build
 				filter(d -> !alreadyBuiltDeplyoments.contains(d)).
@@ -117,7 +117,7 @@ public class BuildTaskComputer {
 				// select only deplyoments that have not beed built yet
 				//filter(d -> !alreadyBuiltDeplyoments.contains(d)).				
 				collect(Collectors.toSet());
-		log.info("Deployments can be rebuild: " + newDeploymentCanBeBuilt);
+		log.info("Deployments can be build now: " + newDeploymentCanBeBuilt);
 		if (!newDeploymentCanBeBuilt.equals(deploymentsCanBeBuilt)) {
 			this.deploymentsCanBeBuilt = newDeploymentCanBeBuilt;
 			getPool().execute(() -> deploymentsCanBeBuiltObservable.setNewValueAndNotify(newDeploymentCanBeBuilt));
