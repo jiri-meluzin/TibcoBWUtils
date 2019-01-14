@@ -62,7 +62,7 @@ public class BuildTaskComputer {
 	}
 	
 	synchronized public void libraryBuilt(Library lib, boolean changed) {
-		log.info("Library " + lib + " from " + lib.getSourcePath() + " has been built");
+		log.fine("Library " + lib + " from " + lib.getSourcePath() + " has been built");
 		finishedLibraries.add(lib);
 		if (!changed) {
 			unchangedLibraries.add(lib);
@@ -71,7 +71,7 @@ public class BuildTaskComputer {
 	}
 	
 	synchronized public void deplyomentBuilt(Deployment deployment) {
-		log.info("Deployment " + deployment + " has been built");
+		log.fine("Deployment " + deployment + " has been built");
 		alreadyBuiltDeplyoments.add(deployment);
 		getPool().execute(() -> updateStatus(changedDeployments));
 	}
@@ -81,9 +81,9 @@ public class BuildTaskComputer {
 	}
 
 	synchronized private Set<Deployment> updateStatus(Set<Deployment> changedDeployments) {
-		log.info("Changed deployments: " + changedDeployments);
-		log.info("Unchanged libraries: " + unchangedLibraries);
-		log.info("Library usage: " + libraryUsage);
+		log.fine("Changed deployments: " + changedDeployments);
+		log.fine("Unchanged libraries: " + unchangedLibraries);
+		log.fine("Library usage: " + libraryUsage);
 		deploymentsToBuild.clear();
 		deploymentsToBuild.addAll(changedDeployments);		
 		Set<Deployment> dependentDeployments = new HashSet<>(changedDeployments);
@@ -102,7 +102,7 @@ public class BuildTaskComputer {
 			dependentDeployments.clear();
 			dependentDeployments.addAll(deploymentsToRebuild);
 		}
-		log.info("All deployments that should be build: " + deploymentsToBuild);
+		log.fine("All deployments that should be build: " + deploymentsToBuild);
 		Set<Deployment> newDeploymentCanBeBuilt = deploymentsToBuild.stream().
 				// select deplyoments that does not depend on other deployment to build
 				filter(d -> !alreadyBuiltDeplyoments.contains(d)).
@@ -117,7 +117,7 @@ public class BuildTaskComputer {
 				// select only deplyoments that have not beed built yet
 				//filter(d -> !alreadyBuiltDeplyoments.contains(d)).				
 				collect(Collectors.toSet());
-		log.info("Deployments can be build now: " + newDeploymentCanBeBuilt);
+		log.fine("Deployments can be build now: " + newDeploymentCanBeBuilt);
 		if (!newDeploymentCanBeBuilt.equals(deploymentsCanBeBuilt)) {
 			this.deploymentsCanBeBuilt = newDeploymentCanBeBuilt;
 			getPool().execute(() -> deploymentsCanBeBuiltObservable.setNewValueAndNotify(newDeploymentCanBeBuilt));

@@ -41,13 +41,20 @@ public class DeploymentLoader {
 	public void setGlobVcrepoDat(String globVcrepoDat) {
 		this.globVcrepoDat = globVcrepoDat;
 	}
+
+	public boolean filterLibraryPath(Path deploymentPath) {
+		return true;
+	}
+	public boolean filterDeploymentPath(Path deploymentPath) {
+		return true;
+	}
 	
 	public Set<Deployment> loadDeployments(Path branchPath, Function<Path, Library> libraryProducer) {
 		FileSearcher search = new FileSearcher();
 		Map<String, Library> libraries = new HashMap<>();
 		Map<Path, Library> librariesFromSourcePath = new HashMap<>();
 		Set<Deployment> deployments = new HashSet<>();
-		search.searchFiles(branchPath, globLibbuilder, true).forEach(p -> {
+		search.searchFiles(branchPath, globLibbuilder, true).stream().filter(this::filterLibraryPath).forEach(p -> {
 			Library l = libraryProducer.apply(p);
 
 			log.fine("Found libbuilder " + l.getName() + " " + l.getSourcePath());
@@ -55,7 +62,7 @@ public class DeploymentLoader {
 			libraries.put(l.getName(), l);
 			librariesFromSourcePath.put(p, l);
 		});
-		search.searchFiles(branchPath, globVcrepoDat, true).forEach(p -> {
+		search.searchFiles(branchPath, globVcrepoDat, true).stream().filter(this::filterDeploymentPath).forEach(p -> {
 			List<Library> dependencies = new ArrayList<>();
 			Path designtimelibs = p.getParent().resolve(".designtimelibs");
 			if (designtimelibs.toFile().exists()) {
