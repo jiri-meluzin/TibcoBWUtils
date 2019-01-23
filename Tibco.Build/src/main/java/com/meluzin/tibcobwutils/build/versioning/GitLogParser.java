@@ -10,6 +10,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
 
 import com.meluzin.fluentxml.xml.builder.NodeBuilder;
 import com.meluzin.fluentxml.xml.builder.XmlBuilderFactory;
+import com.meluzin.functional.Log;
 import com.meluzin.tibcobwutils.build.versioning.GITLogGrammerParser.CreateLogContext;
 
 
@@ -35,12 +36,12 @@ public class GitLogParser implements VersionSystemLogParser {
 	public NodeBuilder renderAsXml(List<ChangeInfo> changes) {
 
 		XmlBuilderFactory fac = new XmlBuilderFactory();
-		NodeBuilder changelog = fac.createRootElement("changelog");
+		NodeBuilder changelog = fac.createRootElement("changeLog");
 		changelog.addChildren(changes, (c, p) -> {
-			p.addChild("commit").
-				addChild("revision").setTextContent(c.getRevisionInfo()).getParent().
+			p.addChild("logentry").
+				addAttribute("revision", c.getRevisionInfo()).
 				addChild("author").setTextContent(c.getAuthor()).getParent().
-				addChild("date").setTextContent(c.getCommittedAt()).getParent().
+				addChild("date").setTextContent(Log.XSD_DATETIME_FORMATTER.format(c.getCommittedAt())).getParent().
 				addChild("comment").setTextContent(c.getComment()).getParent().
 				addChild("files").addChildren(c.getChangedFiles(), (f,n) -> {
 					n.addChild("file").addAttribute("original-file", f.getOriginalLocation().orElse(null)).addAttribute("status", f.getStatus()).setTextContent(f.getLocation());
