@@ -171,12 +171,16 @@ public class BuildLogRecorder {
 		return result;
 	}
 	private void addBinExecItem(NodeBuilder library, BinExecutor be) {
-		library.addAttribute("started", be.getStarted());
-		library.addAttribute("finished", be.getFinished());
-		library.addAttribute("cmd", be.getExec());
-		library.addAttribute("returnCode", be.getReturnCode());
-		library.addChild("error").setTextContent(be.getStdError());
-		library.addChild("out").setTextContent(be.getStdOutput());
+		if (be == null) {
+			library.addAttribute("disabled", true);
+		} else {
+			library.addAttribute("started", be.getStarted());
+			library.addAttribute("finished", be.getFinished());
+			library.addAttribute("cmd", be.getExec());
+			library.addAttribute("returnCode", be.getReturnCode());
+			library.addChild("error").setTextContent(be.getStdError());
+			library.addChild("out").setTextContent(be.getStdOutput());
+		}
 	}
 	
 }
