@@ -42,9 +42,9 @@ public class GitLogParser implements VersionSystemLogParser {
 				addAttribute("revision", c.getRevisionInfo()).
 				addChild("author").setTextContent(c.getAuthor()).getParent().
 				addChild("date").setTextContent(Log.XSD_DATETIME_FORMATTER.format(c.getCommittedAt())).getParent().
-				addChild("comment").setTextContent(c.getComment()).getParent().
-				addChild("files").addChildren(c.getChangedFiles(), (f,n) -> {
-					n.addChild("file").addAttribute("original-file", f.getOriginalLocation().orElse(null)).addAttribute("status", f.getStatus()).setTextContent(f.getLocation());
+				addChild("msg").setTextContent(c.getComment()).getParent().
+				addChild("paths").addChildren(c.getChangedFiles(), (f,n) -> {
+					n.addChild("path").addAttribute("original-file", f.getOriginalLocation().orElse(null)).addAttribute("status", f.getStatus()).setTextContent(f.getLocation());
 				});
 		});
 		return changelog;
