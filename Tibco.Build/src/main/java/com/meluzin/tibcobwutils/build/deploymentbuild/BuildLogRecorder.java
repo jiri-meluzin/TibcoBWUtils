@@ -114,7 +114,7 @@ public class BuildLogRecorder {
 		
 		return result;
 	}
-	public List<String> generateValidationResult(BuildBranchParallel buildBranchParallel) {
+	public List<String> generateValidationResult() {
 		
 		Set<Deployment> deployments = getDeployments();
 		BuildLogAnalyzer bla = new BuildLogAnalyzer();

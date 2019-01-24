@@ -34,7 +34,7 @@ public class BuildLogAnalyzer {
 	public BinExecutor getConfigValidation(List<BinExecutor> errorLog) {
 		if (errorLog == null) return null;
 		
-		return errorLog.stream().filter(b -> isConfigValidation(b)).findAny().get() ;		
+		return errorLog.stream().filter(b -> isConfigValidation(b)).findAny().orElse(null);		
 	}
 	public boolean containsConfigValidationErrors(List<BinExecutor> errorLog) {
 		BinExecutor b = getConfigValidation(errorLog);

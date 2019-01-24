@@ -215,7 +215,7 @@ public class BuildBranchParallel implements BuildContext {
 		log.info("Rebuilt libraries: " + rebuiltLibraries.stream().sorted((a,b) -> a.getName().compareTo(b.getName())).collect(Collectors.toList()));
 		log.info("Changed libraries: " + changedLibraries.stream().sorted((a,b) -> a.getName().compareTo(b.getName())).collect(Collectors.toList()));
 		NodeBuilder buildLogContent = buildLog.generateResult(this);
-		List<String> validationLogContent = buildLog.generateValidationResult(this);
+		List<String> validationLogContent = buildLog.generateValidationResult();
 		log.info("Log result: " + buildLogContent);
 		log.info("Log validation: " + validationLogContent);
 		if (buildLogPath.isPresent()) {
