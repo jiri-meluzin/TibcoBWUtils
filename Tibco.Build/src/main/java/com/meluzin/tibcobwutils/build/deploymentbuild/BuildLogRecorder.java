@@ -100,7 +100,7 @@ public class BuildLogRecorder {
 			if (validationLogs.containsKey(d)) {
 				List<BinExecutor> be = validationLogs.get(d);
 				
-				BuildLogAnalyzer buildLogAnalyzer = new BuildLogAnalyzer();
+				BuildLogAnalyzer buildLogAnalyzer = createBuildLogAnalyzer();
 				BinExecutor b = buildLogAnalyzer.getCodeValidation(be);
 				NodeBuilder validation = deployment.addChild("validation-code").addAttribute("hasError", buildLogAnalyzer.containsCodeValidationErrors(be));
 				//be.forEach(action);
@@ -117,7 +117,7 @@ public class BuildLogRecorder {
 	public List<String> generateValidationResult() {
 		
 		Set<Deployment> deployments = getDeployments();
-		BuildLogAnalyzer bla = new BuildLogAnalyzer();
+		BuildLogAnalyzer bla = createBuildLogAnalyzer();
 		return
 			deployments.stream().
 				filter(d -> validationLogs.containsKey(d)).
@@ -130,8 +130,12 @@ public class BuildLogRecorder {
 				collect(Collectors.toList());
 	}
 
+	protected BuildLogAnalyzer createBuildLogAnalyzer() {
+		return new BuildLogAnalyzer();
+	}
+
 	private List<String> extractLines(V2<Deployment, List<BinExecutor>> v) {
-		BuildLogAnalyzer bla = new BuildLogAnalyzer();
+		BuildLogAnalyzer bla = createBuildLogAnalyzer();
 		return v.getB().stream().map(vv -> bla.isCodeValidation(vv) || bla.isConfigValidation(vv) ? splitErrorOutputToList(vv) :  new ArrayList<String>()).map(l -> l.stream()).flatMap(l -> l).collect(Collectors.toList());
 	}
 
