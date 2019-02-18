@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.github.jiri-meluzin</groupId>
 	<artifactId>io.github.jiri-meluzin.tibcobwutils.earcomparer</artifactId>
-	<version>1.1</version>
+	<version>1.1-SNAPSHOT</version>
 	<name>Tibco.EARComparer</name>
 
 	<properties>
@@ -129,7 +129,7 @@
 		<dependency>
 			<groupId>io.github.jiri-meluzin</groupId>
 			<artifactId>io.github.jiri-meluzin.tibcobwutils.deploymentrepository</artifactId>
-			<version>1.1</version>
+			<version>1.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
