@@ -1,0 +1,12 @@
+commit a41b26613873292e3052f600b0584e41507c524d
+Merge: c6a0ed1 d35e589
+Author: Jiri Fritzl <jiri.fritzl1-ext@vodafone.com>
+Date:   Wed Mar 6 11:47:33 2019 +0100
+
+    Merge pull request #4 in TIB/vfsrc-cicdtest from TIB/vfsrc-cicdtest-testfork:feature/merge2 to release/CHG08
+    
+    incorporating VF branch
+    
+    * commit 'd35e58955ffe163988bc14bc18020b415beea4b0':
+      fork change
+

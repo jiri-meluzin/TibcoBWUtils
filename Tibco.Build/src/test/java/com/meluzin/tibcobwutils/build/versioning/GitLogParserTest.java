@@ -2,11 +2,14 @@ package com.meluzin.tibcobwutils.build.versioning;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 
 public class GitLogParserTest {
@@ -58,6 +61,15 @@ public class GitLogParserTest {
 	public void testGetChangesGitLog() {
 		
 		List<ChangeInfo> changes = new GitLogParser().getChanges(GitLogParserTest.class.getResourceAsStream("git-log"));
+		assertNotNull(changes);
+		
+	}
+	@Test
+	public void testEmptyLineComment() {
+		
+		List<ChangeInfo> changes = new GitLogParser().getChanges(GitLogParserTest.class.getResourceAsStream("EmptyComment"));
+		String comment = changes.get(0).getComment();
+		assertThat("Six line comment", comment.split("\n").length, CoreMatchers.is(6));
 		assertNotNull(changes);
 		
 	}
