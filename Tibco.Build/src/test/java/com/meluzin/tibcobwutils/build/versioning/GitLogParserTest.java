@@ -69,6 +69,25 @@ public class GitLogParserTest {
 		
 		List<ChangeInfo> changes = new GitLogParser().getChanges(GitLogParserTest.class.getResourceAsStream("EmptyComment"));
 		String comment = changes.get(0).getComment();
+		System.out.println(comment);
+		assertThat("Six line comment", comment.split("\n").length, CoreMatchers.is(6));
+		assertNotNull(changes);
+		
+	}
+	@Test
+	public void testForkComment() {
+		
+		List<ChangeInfo> changes = new GitLogParser().getChanges(GitLogParserTest.class.getResourceAsStream("ForkComment"));
+		String comment = changes.get(0).getComment();
+		assertThat("Six line comment", comment.split("\n").length, CoreMatchers.is(6));
+		assertNotNull(changes);
+		
+	}
+	@Test
+	public void testGitLog() {
+		
+		List<ChangeInfo> changes = new GitLogParser().getChanges(GitLogParserTest.class.getResourceAsStream("gitlog"));
+		String comment = changes.get(0).getComment();
 		assertThat("Six line comment", comment.split("\n").length, CoreMatchers.is(6));
 		assertNotNull(changes);
 		

@@ -20,15 +20,16 @@ dateLine: DATE NEWLINE;
 mergeLine: MERGE NEWLINE;
 commitLine: COMMIT HASH NEWLINE;
 authorLine: AUTHOR NEWLINE;
+
+COMMIT: 'commit ';
+DATE: 'Date: '  ~('>'|'\r'|'\n')* ('+'|'-') ('0'..'9') ('0'..'9') ('0'..'9') ('0'..'9');
+MERGE: 'Merge: '  HASH ' ' HASH;
+AUTHOR: 'Author: ' ~('>'|'\r'|'\n')* '>';
 HASH: (('0'..'9')|('a'..'f'))+;
 FILE: FILE_ACTION '\t' FILE_NAME;
 fragment FILE_NAME:  ~('\r'|'\n')+;
 FILE_ACTION: ('A'|'M'|'D'|('R' '0'..'9'? '0'..'9' '0'..'9'));
 COMMENT: '    ' ~('\r'|'\n')+;
-EMPTY_COMMENT: '    ' ('\r'|'\n');
-COMMIT: 'commit ';
-DATE: 'Date: '  ~('>'|'\r'|'\n')* ('+'|'-') ('0'..'9') ('0'..'9') ('0'..'9') ('0'..'9');
-MERGE: 'Merge: '  HASH ' ' HASH;
-AUTHOR: 'Author: ' ~('>'|'\r'|'\n')* '>';
+EMPTY_COMMENT: '    ';
 
 NEWLINE : '\r' ? '\n';

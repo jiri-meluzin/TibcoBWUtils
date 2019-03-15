@@ -1,0 +1,59 @@
+commit 6fe8f24c6b481d89072a14aaafd0bc51907828e1
+Merge: c6a0ed1 d35e589
+Author: Jiri Fritzl <jiri.fritzl1-ext@vodafone.com>
+Date:   Wed Mar 6 11:47:33 2019 +0100
+
+    Merge pull request #4 in TIB/vfsrc-cicdtest from TIB/vfsrc-cicdtest-testfork:feature/merge2 to release/CHG08
+    
+    incorporating VF branch
+    
+    * commit 'd35e58955ffe163988bc14bc18020b415beea4b0':
+      fork change
+
+commit d35e58955ffe163988bc14bc18020b415beea4b0
+Merge: c4b0773 c6a0ed1
+Author: Jiri Fritzl <jiri.fritzl1-ext@vodafone.com>
+Date:   Wed Mar 6 11:34:15 2019 +0100
+
+    changes on CHG08 incorporated into feature/merge2
+
+commit c6a0ed120e9ba3b8071dbceaa50ddd7e1763ffda
+Merge: af3fc39 1dc3cb0
+Author: Jiri Fritzl <jiri.fritzl1-ext@vodafone.com>
+Date:   Wed Mar 6 11:22:21 2019 +0100
+
+    Merge branch 'release/CHG08' of https://bitbucket.oskarmobil.cz/scm/tib/vfsrc-cicdtest into release/CHG08
+
+commit af3fc39d058188bb5dd706139287a2fee9b7da07
+Author: Jiri Fritzl <jiri.fritzl1-ext@vodafone.com>
+Date:   Wed Mar 6 11:22:12 2019 +0100
+
+    parent change
+
+M	components/BIM/src/tibco/BIM/BIM/Processes/Administration/EngineStartup/LoadListOfValues.process
+
+commit c4b0773bf10b5f2f7d51c4c1368fdb7ff4c2a632
+Author: Jiri Fritzl <jiri.fritzl1-ext@vodafone.com>
+Date:   Wed Mar 6 11:19:22 2019 +0100
+
+    fork change
+
+M	components/BIM/src/tibco/BIM/BIM/Processes/Administration/EngineStartup/LoadListOfValues.process
+
+commit 1dc3cb0adaf23a16d4ece222da17a083ce4cf6db
+Merge: 1a0f40b 08a903c
+Author: Jiri Fritzl <jiri.fritzl1-ext@vodafone.com>
+Date:   Wed Mar 6 10:57:55 2019 +0100
+
+    Merge pull request #1 in TIB/vfsrc-cicdtest from TIB/vfsrc-cicdtest-testfork:feature/vf_chg08 to release/CHG08
+    
+    * commit '08a903c331243bb2f4d89ea4011c2ca66064fca8':
+      vf feature change
+
+commit 08a903c331243bb2f4d89ea4011c2ca66064fca8
+Author: Jiri Fritzl <jiri.fritzl1-ext@vodafone.com>
+Date:   Wed Mar 6 10:52:47 2019 +0100
+
+    vf feature change
+
+M	components/BIM/src/tibco/BIM/BIM/Processes/Administration/EngineStartup/LoadListOfValues.process
