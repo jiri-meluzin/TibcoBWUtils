@@ -13,7 +13,7 @@ public interface GlobalVariable {
 	public String getDescription();
 	/**
 	 * Ex. Deployment or Domain , they are not settable.
-	 * @return
+	 * @return check whether variable is settable
 	 */
 	public boolean isInternalVariable();
 	
