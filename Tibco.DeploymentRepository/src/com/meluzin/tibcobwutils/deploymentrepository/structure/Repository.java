@@ -3,6 +3,7 @@ package com.meluzin.tibcobwutils.deploymentrepository.structure;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -19,22 +20,32 @@ public interface Repository {
 	public static Predicate<Item> SEARCH_HTTP_CONNECTION = SEARCH_SHARED_HTTP.and(item -> item.loadAsXml().searchFirst(true, n -> "useSsl".equals(n.getName()) && "true".equals(n.getTextContent())) == null);
 	public static Predicate<Item> SEARCH_HTTPS_CONNECTION = SEARCH_SHARED_HTTP.and(item -> item.loadAsXml().searchFirst(true, n -> "useSsl".equals(n.getName()) && "true".equals(n.getTextContent())) != null);
 	public default List<Item> findAll(Predicate<Item> filter) {
-		Queue<Item> toSearch = new LinkedList<>();
-		List<Item> result = new ArrayList<>();
-		toSearch.add(getRoot());
-		while (!toSearch.isEmpty()) {
-			Item item = toSearch.poll();
-			if (filter.test(item)) result.add(item);
-			List<Item> children = item.getChildren();
-			toSearch.addAll(children);
-		}
-		return result;
+		return findAll(getRoot(), filter);
 	}
 	public default Optional<Item> findItem(Path relativePath) {
 		return resolveItem(getRoot(), relativePath);
 	}
 	public default Optional<Item> findItem(String relativePath) {
 		return findItem(Paths.get(relativePath));
+	}
+	public default List<Item> findAll(Item relativeItem, Predicate<Item> filter) {
+		Queue<Item> toSearch = new LinkedList<>();
+		List<Item> result = new ArrayList<>();
+		toSearch.add(relativeItem);
+		while (!toSearch.isEmpty()) {
+			Item item = toSearch.poll();
+			if (filter.test(item)) result.add(item);
+			List<Item> children = item.getChildren();
+			toSearch.addAll(children);
+		}
+		return result;		
+	}
+	public default List<Item> findAll(Path relativePath, Predicate<Item> filter) {
+		Optional<Item> findItem = findItem(relativePath);
+		if (findItem.isPresent()) {
+			return findAll(findItem.get(), filter);
+		}
+		return Arrays.asList();
 	}
 	public Optional<Item> resolveItem(Item relativeTo, Path relativePath);
 	public default Optional<Item> resolveItem(Item relativeTo, String relativePath) {
