@@ -9,4 +9,5 @@ install:
 
 ## Build and release to maven central
 script:
+    jdk_switcher use oraclejdk8
     mvn clean deploy --settings .maven.xml -DskipTests=true -B -U -Prelease
