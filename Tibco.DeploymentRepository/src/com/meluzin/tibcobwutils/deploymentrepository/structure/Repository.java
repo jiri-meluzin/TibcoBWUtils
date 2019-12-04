@@ -80,6 +80,7 @@ public interface Repository {
 		return createItem(parent, name, false);
 	}
 	public Item createItem(Item parent, String name, boolean isFolder);
+	public void removeItem(Item itemToBeRemoved);
 	public List<Item> getAlternatives(Item item);
 	public GlobalVariables getRootGlobalVariables();
 	public void save();

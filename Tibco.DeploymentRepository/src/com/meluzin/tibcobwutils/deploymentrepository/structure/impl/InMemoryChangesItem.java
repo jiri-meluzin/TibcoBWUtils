@@ -16,12 +16,14 @@ import org.apache.commons.io.output.ByteArrayOutputStream;
 import com.meluzin.functional.Log;
 import com.meluzin.tibcobwutils.deploymentrepository.structure.Item;
 import com.meluzin.tibcobwutils.deploymentrepository.structure.ItemSource;
+import com.meluzin.tibcobwutils.deploymentrepository.structure.ItemSourceType;
 
 public class InMemoryChangesItem implements Item {
 	private Item originalItem;
 	private boolean changed = false;
 	private String name;
 	private boolean isFolder;
+	private boolean removedItem = false;
 	private byte[] content = new byte[0];
 	private List<Item> children = new ArrayList<>();
 	private InMemoryChangesItem parent;
@@ -119,16 +121,28 @@ public class InMemoryChangesItem implements Item {
 	public Path getPath() {
 		return isChanged() ? path : originalItem.getPath();
 	}
-	
+	@Override
+	public void removeItem() {
+		inMemoryChangesImpl.removeItem(this);
+	}
+	public boolean isRemovedItem() {
+		return removedItem;
+	}
 	public void save() {
 		if (isChanged()) {
-			Path p = inMemoryChangesImpl.getDeployment().createItem(parent, getName(), isFolder);
-			if (hasContent()) {
-				try (FileOutputStream stream = new FileOutputStream(inMemoryChangesImpl.getDeployment().getAbsolutePath().resolve(p).toFile())) {
-					stream.write(content);
-					Log.get().info("File stored: " + p);
-				} catch (IOException e) {
-					throw new RuntimeException("Cannot save item (" + p + ")", e);
+			if (isRemovedItem()) {
+				Path p = inMemoryChangesImpl.getDeployment().removeItem(parent, getName(), isFolder);
+				Log.get().info("File removed: " + p);
+			}
+			else {
+				Path p = inMemoryChangesImpl.getDeployment().createItem(parent, getName(), isFolder);
+				if (hasContent()) {
+					try (FileOutputStream stream = new FileOutputStream(inMemoryChangesImpl.getDeployment().getAbsolutePath().resolve(p).toFile())) {
+						stream.write(content);
+						Log.get().info("File stored: " + p);
+					} catch (IOException e) {
+						throw new RuntimeException("Cannot save item (" + p + ")", e);
+					}
 				}
 			}
 			//getChildren().forEach(item -> ((InMemoryChangesItem)item).save());

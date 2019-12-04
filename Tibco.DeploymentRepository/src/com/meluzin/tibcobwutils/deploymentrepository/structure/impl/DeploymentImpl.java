@@ -1,5 +1,6 @@
 package com.meluzin.tibcobwutils.deploymentrepository.structure.impl;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -9,7 +10,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -30,6 +34,7 @@ public class DeploymentImpl implements Deployment {
 	private Config config;
 	private String name;
 	private List<Library> libraries;
+	private Set<Item> removedItems = new HashSet<>();
 	public DeploymentImpl(Path deploymentPath, Config config) {
 		if (!isValidPath(deploymentPath)) {
 			throw new IllegalArgumentException(deploymentPath + " is not a valid deployment path");
@@ -73,10 +78,30 @@ public class DeploymentImpl implements Deployment {
 		NodeBuilder folder = fac.loadFromFile(rootFolderPath);
 		return folder.searchFirst(true, n -> n.hasAttribute("resourceType") && "ae.rootfolder".equals(n.getAttribute("resourceType")));
 	}
+	public Set<Item> getRemovedItems() {
+		return removedItems;
+	}
+	public Path removeItem(Item itemToRemove) {
+		if (itemToRemove.isFolder()) {
+			itemToRemove.getChildren().forEach(i -> removeItem(itemToRemove));
+		}
+		return removeItem(itemToRemove.getParent(), itemToRemove.getName(), itemToRemove.isFolder());
+	}
+	public Path removeItem(Item parent, String name, boolean isFolder) {
+		Path itemAbsolutePath = getItemAbsolutePath(parent, name);
+		
+		File file = itemAbsolutePath.toFile();
+		if (file.exists()) {
+			boolean delete = file.delete();
+			Log.get().info("removed file ("+delete+") " + itemAbsolutePath);
+		} else {
+			Log.get().info("cannot remove non-existant file " + itemAbsolutePath);
+		}
+		return itemAbsolutePath;
+	}
 	public Path createItem(Item parent, String name, boolean isFolder) {
-		Path newItemPath = (parent == null ? Paths.get("/") : parent.getPath()).resolve(name);
-		Path relativePath = Paths.get(newItemPath.toString().substring(1)); // remove starting \
-		Path p = deploymentPath.resolve(relativePath);
+		Path relativePath = getItemRelativePath(parent, name);
+		Path p = getItemAbsolutePath(relativePath);
 		if (isFolder) {
 			if (!p.toFile().mkdirs()) {
 				//throw new RuntimeException("Could not create directory, directory already exists (" + p + ")");
@@ -93,6 +118,18 @@ public class DeploymentImpl implements Deployment {
 				throw new RuntimeException("Could not create file (" + p + ")", e);
 			}
 		}		
+		return relativePath;
+	}
+	protected Path getItemAbsolutePath(Path relativePath) {
+		return deploymentPath.resolve(relativePath);
+	}
+	protected Path getItemAbsolutePath(Item parent, String name) {
+		Path relativePath = getItemRelativePath(parent, name);
+		return getItemAbsolutePath(relativePath);
+	}
+	protected Path getItemRelativePath(Item parent, String name) {
+		Path newItemPath = (parent == null ? Paths.get("/") : parent.getPath()).resolve(name);
+		Path relativePath = Paths.get(newItemPath.toString().substring(1)); // remove starting \
 		return relativePath;
 	}
 	@Override
@@ -139,9 +176,12 @@ public class DeploymentImpl implements Deployment {
 	public class DeploymentItemImpl implements Item {
 		private Path itemPath;
 		private DeploymentItemImpl parent;
+		private List<DeploymentItemImpl> children = new ArrayList<>();
 		public DeploymentItemImpl(Path itemPath, DeploymentItemImpl parent) {
 			this.itemPath = itemPath;
 			this.parent = parent;
+			if (itemPath.toFile().isDirectory()) 
+			this.children =  new FileSearcher().iterateFiles(itemPath, "glob:**/*", "glob:**/*.{svn,folder}", false).map(p -> new DeploymentItemImpl(p, DeploymentItemImpl.this)).collect(Collectors.toList());
 		}
 		@Override
 		public String getName() {
@@ -150,7 +190,7 @@ public class DeploymentImpl implements Deployment {
 
 		@Override
 		public List<Item> getChildren() {
-			return new FileSearcher().iterateFiles(itemPath, "glob:**/*", "glob:**/*.{svn,folder}", false).map(p -> new DeploymentItemImpl(p, DeploymentItemImpl.this)).collect(Collectors.toList());
+			return Collections.unmodifiableList(children);
 		}
 		@Override
 		public Item getParent() {
@@ -185,7 +225,15 @@ public class DeploymentImpl implements Deployment {
 		public boolean isFolder() {
 			return itemPath.toFile().isDirectory();
 		}
-		
+		@Override
+		public boolean isRemovedItem() {
+			return getRemovedItems().contains(this);
+		}
+		@Override
+		public void removeItem() {
+			children.remove(this);
+			getRemovedItems().add(this);
+		}
 		@Override
 		public ItemSource getItemSource() {
 			return DeploymentImpl.this;

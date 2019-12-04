@@ -34,6 +34,7 @@ public class RepositoryImpl implements Repository {
 	private Path deploymentPath;
 	private Config config;
 	private GlobalVariables globalVariables;
+	private DeploymentImpl deployment;
 
 	public RepositoryImpl(Path deploymentPath, Config config) {
 		this.config = config;
@@ -42,7 +43,7 @@ public class RepositoryImpl implements Repository {
 	}
 
 	private void load() {
-		DeploymentImpl deployment = new DeploymentImpl(deploymentPath, config);
+		deployment = new DeploymentImpl(deploymentPath, config);
 		this.inMemoryChanges = new InMemoryChangesImpl(deployment);
 		this.root = new RepositoryItem(inMemoryChanges);
 		loadAllGlobalVariables();
@@ -138,16 +139,22 @@ public class RepositoryImpl implements Repository {
 		return findItem(createdItem.getPath()).get();
 	}
 
+
+	@Override
+	public void removeItem(Item itemToBeRemoved) {
+		itemToBeRemoved.removeItem();
+	}
+
 	@Override
 	public void save() {
+		//deployment.getRemovedItems().forEach(i -> deployment.removeItem(i));
+		inMemoryChanges.getRemovedItems().forEach(i -> inMemoryChanges.removeItem(i.getParent(), i.getName(), i.isFolder()));
 		getRootGlobalVariables().save();
 		root.save();
 	}
 	@Override
 	public boolean isChanged() {
-		 
-		Item root = getRoot();
-		return root != null && (root.isChanged() || hasChangedChild(root));
+		return root != null && hasChangedChild(root);
 	}
 
 	public boolean hasChangedChild(Item root) {
@@ -318,6 +325,15 @@ public class RepositoryImpl implements Repository {
 			Log.get().finest(getPath() + " ~ " + alternatives.stream()
 					.map(item -> item.getItemSource().getAbsolutePath()).collect(Collectors.toList()));
 			getChildren().forEach(child -> ((RepositoryItem) child).print(currentPath));
+		}
+		@Override
+		public void removeItem() {
+			currentItem.removeItem();
+			parent.children.remove(this);
+		}
+		@Override
+		public boolean isRemovedItem() {
+			return currentItem.isRemovedItem();
 		}
 
 		@Override

@@ -57,6 +57,9 @@ public interface Item {
 		}
 		return current;
 	};
+
+	public void removeItem();
+	public boolean isRemovedItem();
 	public ItemSource getItemSource();
 	public Path getPath();
 	public static String getDeploymentReference(Path path) {

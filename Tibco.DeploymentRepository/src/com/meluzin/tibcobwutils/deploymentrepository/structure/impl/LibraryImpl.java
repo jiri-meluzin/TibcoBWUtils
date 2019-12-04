@@ -181,7 +181,14 @@ public class LibraryImpl implements Library {
 		public ItemSource getItemSource() {
 			return LibraryImpl.this;
 		}
-		
+		@Override
+		public void removeItem() {
+			throw new RuntimeException("Item "+getPath()+" cannot be removed from library "+getItemSource().getAbsolutePath()+ ", only items from deployment or in-memory changed items can be removed");	
+		}
+		@Override
+		public boolean isRemovedItem() {
+			return false;
+		}
 		@Override
 		public boolean isChanged() {
 			return false;
