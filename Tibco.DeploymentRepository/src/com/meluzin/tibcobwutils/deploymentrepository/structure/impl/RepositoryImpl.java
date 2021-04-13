@@ -165,7 +165,7 @@ public class RepositoryImpl implements Repository {
 		if (globalVariables == null) {
 			Item root2 = getRoot();
 			Item defaultVars = root2.getChild("defaultVars").get();
-			Item substvar = defaultVars.getChild("defaultVars.substvar").get();
+			Item substvar = defaultVars.getChild("defaultVars.substvar").orElse(null);
 			globalVariables = new GlobalVariablesImpl(substvar, defaultVars, this);
 		}
 		return globalVariables;

@@ -1,7 +1,9 @@
 package com.meluzin.tibcobwutils.earcomparer.fullconfig.model;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -52,13 +54,17 @@ public class SDKPropertiesLoader {
 	}
 	
 	private void load() {
-
-		availableAdapters = new FileSearcher().
-			searchFiles(tibcoAdaptersPath, "glob:**/*", false).
-			stream().
-			map(p -> p.getFileName().toString()).
-			map(n -> T.V(n, n.replaceFirst("ad", ""))).
-			collect(Collectors.toMap(v -> v.getB(), v -> v.getA()));
+		File file = tibcoAdaptersPath.toFile();
+		if (file.exists() && file.isDirectory()) {
+			availableAdapters = new FileSearcher().
+				searchFiles(tibcoAdaptersPath, "glob:**/*", false).
+				stream().
+				map(p -> p.getFileName().toString()).
+				map(n -> T.V(n, n.replaceFirst("ad", ""))).
+				collect(Collectors.toMap(v -> v.getB(), v -> v.getA()));
+		} else {
+			availableAdapters = new HashMap<>();
+		}
 		//System.out.println(collect);
 		
 		Map<String, NodeBuilder> adapterProperties = availableAdapters.values().stream().	
@@ -77,6 +83,7 @@ public class SDKPropertiesLoader {
 		List<Path> BWPaths = new FileSearcher().searchFiles(tibcoBWPath, "glob:**/*", false).stream().sorted((a,b) -> b.toString().compareTo(a.toString())).collect(Collectors.toList());
 		Map<String, NodeBuilder> bwProperties = BWPaths.
 				stream().
+				filter(BWPath -> BWPath.resolve("lib/com/tibco/deployment/bwengine.xml").toFile().exists()).
 				map(BWPath -> T.V(BWPath.getFileName().toString(), new XmlBuilderFactory().loadFromFile(BWPath.resolve("lib/com/tibco/deployment/bwengine.xml")))).
 				collect(Collectors.toMap(v -> v.getA(), v -> v.getB()));
 

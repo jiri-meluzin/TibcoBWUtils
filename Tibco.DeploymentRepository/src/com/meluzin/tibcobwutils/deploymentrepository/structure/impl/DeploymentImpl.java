@@ -48,8 +48,17 @@ public class DeploymentImpl implements Deployment {
 		return ItemSourceType.Deployment;
 	}
 	private void load() {
-		NodeBuilder rootFolderInfo = getRootFolderInfo(getRootFolderPath(deploymentPath));
-		this.name = rootFolderInfo.getAttribute("name");
+		Path rootFolderPath = getRootFolderPath(deploymentPath);
+		this.name = deploymentPath.getFileName().toString();
+		try {
+			if (rootFolderPath.toFile().exists()) {
+				NodeBuilder rootFolderInfo = getRootFolderInfo(rootFolderPath);
+				this.name = rootFolderInfo.getAttribute("name");
+			}
+		} catch (Exception ex) {
+			System.err.println(deploymentPath + " cannot read .folder file: " + ex.getMessage());
+		}
+		
 		this.libraries = loadDesignTimeLibs();
 	}
 	private boolean isValidPath(Path deploymentPath) {
@@ -58,7 +67,7 @@ public class DeploymentImpl implements Deployment {
 			System.err.println(deploymentPath + " is not a directory");
 			return false;
 		}
-		Path rootFolderPath = getRootFolderPath(deploymentPath);
+		/*Path rootFolderPath = getRootFolderPath(deploymentPath);
 		if (!rootFolderPath.toFile().isFile()) {
 			System.err.println(deploymentPath + " does not contain .folder file");
 			return false;			
@@ -67,7 +76,7 @@ public class DeploymentImpl implements Deployment {
 		if (rootFolderInfo == null) {
 			System.err.println(rootFolderPath + " does not contain ae.rootfolder resourceType");
 			return false;
-		}		
+		}*/		
 		return true;
 	}
 	private Path getRootFolderPath(Path deploymentPath) {

@@ -28,12 +28,5 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry excluding="**" kind="src" output="target/test-classes" path="src/test/resources">
-		<attributes>
-			<attribute name="test" value="true"/>
-			<attribute name="maven.pomderived" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/jirka/work/tib/app/tibco/tpcl/5.8/jdbc/ojdbc5.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

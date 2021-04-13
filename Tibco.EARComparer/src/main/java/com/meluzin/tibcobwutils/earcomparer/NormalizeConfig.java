@@ -2,6 +2,7 @@ package com.meluzin.tibcobwutils.earcomparer;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -10,6 +11,7 @@ import java.util.stream.Collectors;
 
 import com.meluzin.fluentxml.xml.builder.NodeBuilder;
 import com.meluzin.fluentxml.xml.builder.XmlBuilderFactory;
+import com.meluzin.functional.FileSearcher;
 import com.meluzin.functional.Lists;
 import com.meluzin.functional.T;
 import com.meluzin.functional.T.V2;
@@ -35,16 +37,30 @@ public class NormalizeConfig {
 		argParser.addArgument("-tibcohome").type(String.class).required(false).help("Path to tibco home. Ex: T:/tib/app/tibco");
 		
 		Namespace res = argParser.parseArgsOrFail(args);
-		Path config = Paths.get(res.getString("config"));
-		Path outPath = null;
+		Path configPath = Paths.get(res.getString("config"));
+		Optional<Path> outPath = Optional.ofNullable(res.getString("out")).map(p -> Paths.get(p));
 		Path tibcoHome = Paths.get(res.getString("tibcohome") == null ? "t:/tib/app/tibco" : res.getString("tibcohome"));
 		SDKPropertiesLoader loader = new SDKPropertiesLoader(tibcoHome);
-		if (res.get("out") != null) {
-			outPath = Paths.get(res.getString("out"));
-		}
-		NodeBuilder out = new NormalizeConfig(loader).loadFullConfig(config, true);
-		if (outPath != null) new XmlBuilderFactory().renderNode(out, outPath);
-		else System.out.println(out);
+		boolean isConfigPathDir = configPath.toFile().isDirectory();
+		List<Path> configsToProcess = isConfigPathDir ? new FileSearcher().searchFiles(configPath, "glob:**/*.xml", false) : Lists.asList(configPath);
+		
+		configsToProcess.forEach(config -> {
+			NodeBuilder out = new NormalizeConfig(loader).loadFullConfig(config, true);
+			if (outPath.isPresent()) {
+				Path outputPath = outPath.get();
+				if (isConfigPathDir || outputPath.toFile().isDirectory()) {
+					outputPath = outputPath.resolve(config.getFileName());
+				}
+				outputPath.getParent().toFile().mkdirs();
+				new XmlBuilderFactory().renderNode(out, outputPath);
+			}
+			else {
+				if (configsToProcess.size() > 1) {
+					System.out.println(config);
+				}
+				System.out.println(out);
+			}
+		});
 	}
 	
 	public NodeBuilder loadFullConfig(Path config1, boolean decrypt) {
