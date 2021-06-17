@@ -2,6 +2,7 @@ package com.meluzin.tibcobwutils.deploymentrepository.structure.impl;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -264,6 +265,9 @@ public class GlobalVariablesImpl implements GlobalVariables {
 			String group = m.group(1);
 			Path varRelativePath = Paths.get(group);
 			Optional<GlobalVariable> resolve = resolve(varRelativePath);
+			if (!resolve.isPresent()) {
+				throw new InvalidParameterException("Cannot resolve "+varRelativePath + " variable");
+			}
 			String resolvedValue = resolve.get().getValue();
 			if ("Password".equals(resolve.get().getType())) {
 				resolvedValue = new PasswordDecrypter().decrypt(resolvedValue);

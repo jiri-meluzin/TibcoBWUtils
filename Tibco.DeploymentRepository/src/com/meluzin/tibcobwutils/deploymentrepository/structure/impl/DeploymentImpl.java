@@ -101,7 +101,17 @@ public class DeploymentImpl implements Deployment {
 		
 		File file = itemAbsolutePath.toFile();
 		if (file.exists()) {
-			boolean delete = file.delete();
+			if (file.isDirectory()) {
+				File[] listFiles = file.listFiles();
+				if (listFiles.length == 1) {
+					File dotFolderFile = listFiles[0];
+					if (".folder".equals(dotFolderFile.getName())) {
+						boolean deleteDotFolder = dotFolderFile.delete();
+						Log.get().info("removed file ("+deleteDotFolder+") " + dotFolderFile);
+					}
+				}
+			}
+			boolean delete = file.delete();			
 			Log.get().info("removed file ("+delete+") " + itemAbsolutePath);
 		} else {
 			Log.get().info("cannot remove non-existant file " + itemAbsolutePath);

@@ -148,7 +148,7 @@ public class RepositoryImpl implements Repository {
 	@Override
 	public void save() {
 		//deployment.getRemovedItems().forEach(i -> deployment.removeItem(i));
-		inMemoryChanges.getRemovedItems().forEach(i -> inMemoryChanges.removeItem(i.getParent(), i.getName(), i.isFolder()));
+		inMemoryChanges.getRemovedItems().stream().sorted((a,b)->-a.getPath().compareTo(b.getPath())).forEach(i -> inMemoryChanges.removeItem(i.getParent(), i.getName(), i.isFolder()));
 		getRootGlobalVariables().save();
 		root.save();
 	}
@@ -164,7 +164,8 @@ public class RepositoryImpl implements Repository {
 	public GlobalVariables getRootGlobalVariables() {
 		if (globalVariables == null) {
 			Item root2 = getRoot();
-			Item defaultVars = root2.getChild("defaultVars").get();
+			Optional<Item> child = root2.getChild("defaultVars");
+			Item defaultVars = child.orElseGet(() -> createItem("defaultVars", true));
 			Item substvar = defaultVars.getChild("defaultVars.substvar").orElse(null);
 			globalVariables = new GlobalVariablesImpl(substvar, defaultVars, this);
 		}
