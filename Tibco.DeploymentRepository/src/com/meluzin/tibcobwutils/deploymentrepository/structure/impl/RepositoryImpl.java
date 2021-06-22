@@ -1,5 +1,6 @@
 package com.meluzin.tibcobwutils.deploymentrepository.structure.impl;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Path;
@@ -11,6 +12,8 @@ import java.util.Optional;
 import java.util.Queue;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.apache.commons.io.IOUtils;
 
 import com.meluzin.fluentxml.xml.builder.NodeBuilder;
 import com.meluzin.fluentxml.xml.builder.SchemaLoader;
@@ -130,8 +133,15 @@ public class RepositoryImpl implements Repository {
 			alternatives = ((RepositoryItem) item).alternatives;
 		}
 		Item createdItem = inMemoryChanges.createItem(repositoryItemParent.getCurrentItem(), name, isFolder);
-		if (previousChild.isPresent()/* && type == ItemSourceType.Deployment */)
+		
+		if (previousChild.isPresent()/* && type == ItemSourceType.Deployment */) {
 			repositoryItemParent.children.remove(previousChild.get());
+			try (OutputStream setContent = createdItem.setContent()){
+				IOUtils.copy(previousChild.get().getContent(), setContent);
+			} catch (IOException e) {
+				throw new RuntimeException("Could not copy content from previous version of item to new item ("+createdItem.getDeploymentReference()+")", e);
+			}
+		}
 		repositoryItemParent.children.add(new RepositoryItem(repositoryItemParent, createdItem, alternatives));
 		repositoryItemParent.children.sort((a, b) -> {
 			return new ComparableItem(a).compareTo(new ComparableItem(b));

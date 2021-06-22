@@ -23,11 +23,20 @@ import com.meluzin.tibcobwutils.earcomparer.load.LoadZipFile;
 
 public class EARComparer {
 	private boolean replaceNewLines = false;
+	private boolean removeAdapterSDKPropertiesFromTIBCOXML = true;
 
 	public EARComparer() {
 	}
 	public EARComparer(boolean replaceNewLines) {
 		this.replaceNewLines = replaceNewLines;
+	}
+	
+	public boolean isRemoveAdapterSDKPropertiesFromTIBCOXML() {
+		return removeAdapterSDKPropertiesFromTIBCOXML;
+	}
+
+	public void setRemoveAdapterSDKPropertiesFromTIBCOXML(boolean removeAdapterSDKPropertiesFromTIBCOXML) {
+		this.removeAdapterSDKPropertiesFromTIBCOXML = removeAdapterSDKPropertiesFromTIBCOXML;
 	}
 	
 	public boolean isReplaceNewLines() {
@@ -214,7 +223,9 @@ public class EARComparer {
 		sortBwBPConfigurations(oldFileXml);
 		removeAliasesDefinition(oldFileXml);
 		removeWhiteSpaces(oldFileXml);
-		removeSDKVariables(oldFileXml);
+		if (isRemoveAdapterSDKPropertiesFromTIBCOXML()) {
+			removeSDKVariables(oldFileXml);
+		}
 		removeSettableVariables(oldFileXml);
 		
 		//System.out.println(oldFileXml);

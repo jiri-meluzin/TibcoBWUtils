@@ -15,12 +15,16 @@ public class CompareEARStarter {
 			argParser.addArgument("-old").type(String.class).required(true).help("Path to old ear. Ex: T:/Source/R160729/AP_API_IO.ear");
 			argParser.addArgument("-new").type(String.class).required(true).help("Path to new ear. Ex: T:/Source/R160924/AP_API_IO.ear");
 			argParser.addArgument("-verbose").type(String.class).required(false).help("Quiet output");
+			argParser.addArgument("-compareAdapterSDKProperties").type(Boolean.class).required(false).setDefault(false).help("Compare SDK Properties in TIBCO.xml, default is false");
 			
 			Namespace res = argParser.parseArgsOrFail(args);
 			String oldPath = res.get("old");
 			String newPath = res.get("new");
 			String verbose = res.get("verbose");
-			List<CompareResult> result = new EARComparer().compare(Paths.get(oldPath), Paths.get(newPath));
+			boolean compSDK = res.getBoolean("compareAdapterSDKProperties");
+			EARComparer earComparer = new EARComparer();
+			earComparer.setRemoveAdapterSDKPropertiesFromTIBCOXML(!compSDK);
+			List<CompareResult> result = earComparer.compare(Paths.get(oldPath), Paths.get(newPath));
 	
 			result.forEach(r -> System.out.println(r));
 			if (result.size() == 0) {
