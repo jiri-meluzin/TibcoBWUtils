@@ -219,6 +219,7 @@ public class EARComparer {
 	}
 	private NodeBuilder normalizeTibcoXML(NodeBuilder oldFileXml) {
 		sortNameValuePairs(oldFileXml);
+		normalizeNameValuePairs(oldFileXml);
 		clearNotImportantValues(oldFileXml);
 		sortExternalDependencies(oldFileXml);
 		sortBwBPConfigurations(oldFileXml);
@@ -231,6 +232,22 @@ public class EARComparer {
 		
 		//System.out.println(oldFileXml);
 		return oldFileXml;
+	}
+	private void normalizeNameValuePairs(NodeBuilder oldFileXml) {
+
+		oldFileXml.
+			search(true, "NameValuePair").
+			filter(n -> n.hasChild(c -> "name".equals(c.getName()) && "EXTERNAL_JAR_DEPENDENCY".equals(c.getTextContent()))).
+			map(n -> n.search("value")).
+			flatMap(n -> n).
+			filter(n -> n.getTextContent() != null).
+			forEach(n -> n.setTextContent(
+						Arrays.asList(n.getTextContent().split(",")).
+						stream().
+						sorted().
+						collect(Collectors.joining(","))
+					)
+			);
 	}
 	public void removeSettableVariables(NodeBuilder oldFileXml) {
 		oldFileXml.
