@@ -237,7 +237,7 @@ public class EARComparer {
 
 		oldFileXml.
 			search(true, "NameValuePair").
-			filter(n -> n.hasChild(c -> "name".equals(c.getName()) && "EXTERNAL_JAR_DEPENDENCY".equals(c.getTextContent()))).
+			filter(n -> n.hasChild(c -> "name".equals(c.getName()) && Arrays.asList("EXTERNAL_RESOURCE_DEPENDENCY","EXTERNAL_JAR_DEPENDENCY").contains(c.getTextContent()))).
 			map(n -> n.search("value")).
 			flatMap(n -> n).
 			filter(n -> n.getTextContent() != null).

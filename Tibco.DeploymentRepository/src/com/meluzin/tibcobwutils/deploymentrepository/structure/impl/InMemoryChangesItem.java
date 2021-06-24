@@ -77,7 +77,7 @@ public class InMemoryChangesItem implements Item {
 
 	@Override
 	public boolean hasContent() {
-		return isChanged() ? !isFolder() : originalItem.hasContent();
+		return isChanged() ? !isFolder() && content.length > 0 : originalItem.hasContent();
 	}
 
 	@Override
