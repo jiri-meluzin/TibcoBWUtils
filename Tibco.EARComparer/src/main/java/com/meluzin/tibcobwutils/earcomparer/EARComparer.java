@@ -142,6 +142,7 @@ public class EARComparer {
 				fileName.endsWith(".process") || 
 				fileName.endsWith(".xml") ||  
 				fileName.endsWith(".xslt") || 
+				fileName.endsWith(".xsl") || 
 				fileName.endsWith(".xsd") || 
 				fileName.endsWith(".wsdl") || 
 				fileName.endsWith(".aeschema") || 
