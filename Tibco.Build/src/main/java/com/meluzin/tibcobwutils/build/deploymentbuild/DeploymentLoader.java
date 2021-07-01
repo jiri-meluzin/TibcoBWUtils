@@ -74,7 +74,7 @@ public class DeploymentLoader {
 		                map(s -> s.replaceAll("\\\\", "").split("=")).
 		                sorted((parts1, parts2) -> Integer.parseInt(parts1[0]) - Integer.parseInt(parts2[0])).
 		                map(parts -> parts[1]).
-		                map(name -> findLibrary(libraries, name)).
+		                map(name -> findLibrary(libraries, name, p.getParent())).
 		                filter(l -> l.isPresent()).
 		                map(l -> l.get()).
 		                collect(Collectors.toList()));
@@ -95,10 +95,10 @@ public class DeploymentLoader {
 		return deployments;
 		
 	}
-	private Optional<Library> findLibrary(Map<String, Library> libraries, String name) {
+	private Optional<Library> findLibrary(Map<String, Library> libraries, String name, Path deploymentPath) {
 		Library foundLibrary = libraries.get(name);
 		if (foundLibrary == null) {
-			log.fine("No library found for: " + name);
+			log.fine("No library found for: " + name + " referenced from "+deploymentPath);
 		}
 		return Optional.ofNullable(foundLibrary);
 	}
