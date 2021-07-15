@@ -102,7 +102,7 @@ public final class BinExecutor {
 			int returnCode = p.exitValue();
 			finished.setA(true);
 			if (schedule.isPresent()) schedule.get().shutdownNow();
-			newFixedThreadPool.awaitTermination(1, TimeUnit.SECONDS);
+			newFixedThreadPool.awaitTermination(10, TimeUnit.MILLISECONDS);
 			newFixedThreadPool.shutdown();
 			
 			return new BinExecutor(exec, returnCode, stdOutputHolder.getA(), stdErrorHolder.getA(), started, new Date());

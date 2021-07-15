@@ -13,6 +13,8 @@ import java.util.stream.Collectors;
 
 import com.meluzin.functional.Lists;
 import com.meluzin.functional.Log;
+import com.meluzin.functional.T;
+import com.meluzin.functional.T.V2;
 
 public class BuildTaskComputer {
 	private static Logger log = Log.get();
@@ -103,6 +105,17 @@ public class BuildTaskComputer {
 			dependentDeployments.addAll(deploymentsToRebuild);
 		}
 		log.fine("All deployments that should be build: " + deploymentsToBuild);
+		
+		List<V2<Deployment, List<String>>> deploymentsWithNotFinishedDependiec = deploymentsToBuild.stream().				
+		// select deplyoments that does not depend on other deployment to build
+		filter(d -> !alreadyBuiltDeplyoments.contains(d)).
+		map(d -> 
+			T.V(d,d.getDependencies().stream().
+				filter(l -> librariesToBuild.contains(l)).
+				filter(l -> !finishedLibraries.contains(l)).
+				map(l -> l.getName()).
+				collect(Collectors.toList()))).filter(v->v.getB().size()>0).collect(Collectors.toList());
+		log.fine("Deployments with not finished dependencies: " + deploymentsWithNotFinishedDependiec.stream().map(d -> d.toString()).collect(Collectors.joining("\n")));
 		Set<Deployment> newDeploymentCanBeBuilt = deploymentsToBuild.stream().
 				// select deplyoments that does not depend on other deployment to build
 				filter(d -> !alreadyBuiltDeplyoments.contains(d)).

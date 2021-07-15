@@ -62,6 +62,7 @@ public class DeploymentLoader {
 			libraries.put(l.getName(), l);
 			librariesFromSourcePath.put(p, l);
 		});
+		log.info(libraries.toString());
 		search.searchFiles(branchPath, globVcrepoDat, true).stream().filter(this::filterDeploymentPath).forEach(p -> {
 			List<Library> dependencies = new ArrayList<>();
 			Path designtimelibs = p.getParent().resolve(".designtimelibs");
@@ -98,7 +99,7 @@ public class DeploymentLoader {
 	private Optional<Library> findLibrary(Map<String, Library> libraries, String name, Path deploymentPath) {
 		Library foundLibrary = libraries.get(name);
 		if (foundLibrary == null) {
-			log.fine("No library found for: " + name + " referenced from "+deploymentPath);
+			log.severe("No library found for: " + name + " referenced from "+deploymentPath);
 		}
 		return Optional.ofNullable(foundLibrary);
 	}

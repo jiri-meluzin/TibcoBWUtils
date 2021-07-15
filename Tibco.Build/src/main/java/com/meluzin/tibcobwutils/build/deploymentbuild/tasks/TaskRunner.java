@@ -4,13 +4,29 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ForkJoinPool;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
+
 import com.meluzin.functional.Log;
+import com.meluzin.functional.Utils;
 
 public class TaskRunner {
-
+	// Used as helper task, when there are no other tasks
+	private static final Task NO_OP_TASK = new Task() {
+		
+		@Override
+		public void run() {
+			
+		}
+		@Override
+		public String toString() {
+			return "NO_OP Task";
+		}
+	};
 	private static Logger log = Log.get();
 	private OnErrorAction onErrorAction = (a,b) -> {
 		log.severe("Action " + a + " finished with exception: " +b.getClass().getName() + "  " +b.getMessage());
@@ -40,12 +56,15 @@ public class TaskRunner {
 	public void exec(ForkJoinPool pool, Stream<Task> actions) {
 		Set<Task> finished = new HashSet<>();
 		Set<Task> running = new HashSet<>();
-		actions.forEach(a -> {
-			running.add(a);
+		Stream<Task> emptyTask = Stream.of(NO_OP_TASK); // emptyTask is used for case, when there are no actions, otherwise getOnFinisherAction would not be fired
+		List<Task> actionsList = Stream.concat(actions, emptyTask).collect(Collectors.toList());
+		running.addAll(actionsList);
+		actionsList.forEach(a -> {
 			pool.execute(() -> {
 				try {
 					a.run();
 				} catch (Throwable t) {
+					log.log(Level.SEVERE, "Tasks "+a+" failed", t);		
 					getOnErrorAction().onException(a, t);
 				}  
 				
@@ -55,6 +74,10 @@ public class TaskRunner {
 						pool.execute(() -> {
 							getOnFinishAction().onFinish(finished);
 						});						
+					} else {
+						HashSet<Task> copy = new HashSet<>(running);
+						copy.removeAll(finished);
+						log.info("Remaining tasks: "+copy);
 					}
 				}
 			});
