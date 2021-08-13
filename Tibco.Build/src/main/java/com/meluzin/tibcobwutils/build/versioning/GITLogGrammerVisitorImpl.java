@@ -14,25 +14,36 @@ import java.util.stream.Collectors;
 import com.meluzin.fluentxml.xml.builder.NodeBuilder;
 import com.meluzin.fluentxml.xml.builder.XmlBuilderFactory;
 import com.meluzin.functional.Lists;
+import com.meluzin.functional.T;
 import com.meluzin.tibcobwutils.build.versioning.GITLogGrammerParser.AuthorLineContext;
 import com.meluzin.tibcobwutils.build.versioning.GITLogGrammerParser.CommentContext;
 import com.meluzin.tibcobwutils.build.versioning.GITLogGrammerParser.CommitLineContext;
 import com.meluzin.tibcobwutils.build.versioning.GITLogGrammerParser.CommitRuleContext;
 import com.meluzin.tibcobwutils.build.versioning.GITLogGrammerParser.DateLineContext;
 import com.meluzin.tibcobwutils.build.versioning.GITLogGrammerParser.FileContext;
+import com.meluzin.tibcobwutils.build.versioning.GITLogGrammerParser.MergeLineContext;
 
 final class GITLogGrammerVisitorImpl extends GITLogGrammerBaseVisitor<List<ChangeInfo>> {
 	List<String> commits = new ArrayList<>();
 	String author;
 	String hash;
 	Date date;
+	Optional<T.V2<String, String>> merge = Optional.empty();
 	List<String> comments = new ArrayList<>();
 	List<String> files = new ArrayList<>();
 	List<ChangeInfo> result = new ArrayList<>();
 
 	GITLogGrammerVisitorImpl() {
 	}
-
+	
+	@Override
+	public List<ChangeInfo> visitMergeLine(MergeLineContext ctx) {
+		// TODO Auto-generated method stub
+		super.visitMergeLine(ctx);
+		String[] split = ctx.getChild(0).getText().replace("Merge: ", "").split(" ");
+		merge = Optional.of(T.V(split[0], split[1]));
+		return result;
+	}	
 	@Override
 	public List<ChangeInfo> visitFile(FileContext ctx) {
 		super.visitFile(ctx);
@@ -83,11 +94,14 @@ final class GITLogGrammerVisitorImpl extends GITLogGrammerBaseVisitor<List<Chang
 		// TODO Auto-generated method stub
 		String h = hash + " -> " + author + " @ " + date + comments + files;
 		String comment = comments.stream().collect(Collectors.joining("\n"));
-		ChangeInfo changeInfo = ChangeInfo.builder().withAuthor(author).withRevisionInfo(hash).withComment(comment).withCommittedAt(date).withChangedFiles(files.stream().map(f -> {
-			String[] parts = f.split("\t");
-			return parseFileAction(parts);
-			
-		}).collect(Collectors.toList())).build();
+		ChangeInfo changeInfo = ChangeInfo.builder().
+				withAuthor(author).
+				withRevisionInfo(hash).
+				withComment(comment).
+				withCommittedAt(date).
+				withChangedFiles(files.stream().map(f ->parseFileAction(f.split("\t"))).collect(Collectors.toList())).
+				withMerge(merge).
+				build();
 		result.add(changeInfo);
 			
 		commits.add(h);

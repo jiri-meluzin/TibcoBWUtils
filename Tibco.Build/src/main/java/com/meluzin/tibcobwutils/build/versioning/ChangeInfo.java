@@ -3,12 +3,17 @@ package com.meluzin.tibcobwutils.build.versioning;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+
+import com.meluzin.functional.T;
+import com.meluzin.functional.T.V2;
 
 public class ChangeInfo {
 	private String author;
 	private String revisionInfo;
 	private Date committedAt;
 	private String comment;
+	private Optional<T.V2<String, String>> mergeHashes;
 	private List<FileChangeInfo> changedFiles;
 	private ChangeInfo(ChangeInfo.Builder builder) {
 		this.author = builder.author;
@@ -16,6 +21,10 @@ public class ChangeInfo {
 		this.changedFiles = builder.changedFiles;
 		this.revisionInfo = builder.revisionInfo;
 		this.comment = builder.comment;
+		this.mergeHashes = builder.mergeHashes;
+	}
+	public Optional<T.V2<String, String>> getMergeHashes() {
+		return mergeHashes;
 	}
 	public String getAuthor() {
 		return author;
@@ -45,6 +54,7 @@ public class ChangeInfo {
 		result = prime * result + ((comment == null) ? 0 : comment.hashCode());
 		result = prime * result + ((committedAt == null) ? 0 : committedAt.hashCode());
 		result = prime * result + ((revisionInfo == null) ? 0 : revisionInfo.hashCode());
+		result = prime * result + ((mergeHashes == null) ? 0 : mergeHashes.hashCode());
 		return result;
 	}
 	@Override
@@ -81,6 +91,11 @@ public class ChangeInfo {
 				return false;
 		} else if (!revisionInfo.equals(other.revisionInfo))
 			return false;
+		if (mergeHashes == null) {
+			if (other.mergeHashes != null)
+				return false;
+		} else if (!mergeHashes.equals(other.mergeHashes))
+			return false;
 		return true;
 	}
 	/**
@@ -98,6 +113,7 @@ public class ChangeInfo {
 		private Date committedAt;
 		private String revisionInfo;
 		private String comment;
+		private Optional<T.V2<String, String>> mergeHashes = Optional.empty();
 		private List<FileChangeInfo> changedFiles = Collections.emptyList();
 
 		private Builder() {
@@ -120,7 +136,7 @@ public class ChangeInfo {
 		public ChangeInfo.Builder withCommittedAt(Date committedAt) {
 			this.committedAt = committedAt;
 			return this;
-		}
+		}		
 
 		public ChangeInfo.Builder withChangedFiles(List<FileChangeInfo> changedFiles) {
 			this.changedFiles = changedFiles;
@@ -129,6 +145,11 @@ public class ChangeInfo {
 
 		public ChangeInfo build() {
 			return new ChangeInfo(this);
+		}
+
+		public Builder withMerge(Optional<V2<String, String>> merge) {
+			this.mergeHashes = merge;
+			return this;
 		}
 	}
 	

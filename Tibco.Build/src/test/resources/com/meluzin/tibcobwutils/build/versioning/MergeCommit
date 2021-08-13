@@ -1,0 +1,7 @@
+commit 331e347c1505262a6c4e4ffa0ec85c33c43b3bdb
+Merge: 62628158 51c79fc7
+Author: Michal Fiala <michal.fiala@vodafone.com>
+Date:   Mon Nov 26 16:33:24 2018 +0100
+
+    Merge branch 'master' of https://bitbucket.oskarmobil.cz/scm/tib/cicd_test
+

@@ -65,6 +65,19 @@ public class GitLogParserTest {
 		
 	}
 	@Test
+	public void testGetChangesMergeCommit() {
+		
+		List<ChangeInfo> changes = new GitLogParser().getChanges(GitLogParserTest.class.getResourceAsStream("MergeCommit"));
+		
+		assertNotNull(changes);
+		assertEquals(changes.size(), 1);
+		assertNotNull(changes.get(0));
+		assertEquals(changes.get(0).getMergeHashes().isPresent(), true);
+		assertEquals(changes.get(0).getMergeHashes().get().getA(), "62628158");
+		assertEquals(changes.get(0).getMergeHashes().get().getB(), "51c79fc7");
+		 
+	}
+	@Test
 	public void testEmptyLineComment() {
 		
 		List<ChangeInfo> changes = new GitLogParser().getChanges(GitLogParserTest.class.getResourceAsStream("EmptyComment"));
@@ -89,6 +102,13 @@ public class GitLogParserTest {
 		List<ChangeInfo> changes = new GitLogParser().getChanges(GitLogParserTest.class.getResourceAsStream("gitlog"));
 		String comment = changes.get(0).getComment();
 		assertThat("Six line comment", comment.split("\n").length, CoreMatchers.is(6));
+		assertNotNull(changes);
+		
+	}
+	@Test
+	public void testPullRequest() {
+		
+		List<ChangeInfo> changes = new GitLogParser().getChanges(GitLogParserTest.class.getResourceAsStream("PullRequest"));
 		assertNotNull(changes);
 		
 	}
