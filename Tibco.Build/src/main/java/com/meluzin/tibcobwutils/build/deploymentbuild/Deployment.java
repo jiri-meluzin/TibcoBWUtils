@@ -3,7 +3,7 @@ package com.meluzin.tibcobwutils.build.deploymentbuild;
 import java.nio.file.Path;
 import java.util.List;
 
-public final class Deployment {
+public class Deployment {
 	private Path path;
 	private List<Library> dependencies;
 	private List<Library> declaredLibraries;
