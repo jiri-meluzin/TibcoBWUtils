@@ -134,7 +134,7 @@ public class RepositoryImpl implements Repository {
 		}
 		Item createdItem = inMemoryChanges.createItem(repositoryItemParent.getCurrentItem(), name, isFolder);
 		
-		if (previousChild.isPresent()/* && type == ItemSourceType.Deployment */) {
+		if (previousChild.isPresent() && !isFolder/* && type == ItemSourceType.Deployment */) {
 			repositoryItemParent.children.remove(previousChild.get());
 			try (OutputStream setContent = createdItem.setContent()){
 				IOUtils.copy(previousChild.get().getContent(), setContent);

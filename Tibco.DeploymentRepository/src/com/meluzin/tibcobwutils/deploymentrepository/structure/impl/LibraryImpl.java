@@ -164,6 +164,9 @@ public class LibraryImpl implements Library {
 				}
 		        return new ByteArrayInputStream(data);
 			}
+			else if (isFolder()) {
+				throw new RuntimeException("Item cannot have any content, it is a folder (" + this + ")");
+			}
 			else {
 				throw new RuntimeException("Item does not have any content (" + this + ")");
 			}

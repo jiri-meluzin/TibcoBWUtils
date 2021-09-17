@@ -82,6 +82,9 @@ public class InMemoryChangesItem implements Item {
 
 	@Override
 	public InputStream getContent() {
+		if (isFolder()) {
+			throw new RuntimeException("Item cannot have any content, it is a folder (" + this + ")");
+		}
 		return isChanged() ? new ByteArrayInputStream(content) : originalItem.getContent();
 	}
 
