@@ -57,7 +57,7 @@ public class GlobalVariablesImpl implements GlobalVariables {
 	public List<GlobalVariable> getLocalVariables() {
 		if (localVariables == null) {
 			if (originalItem == null || originalItem.getItemSource().getType() == ItemSourceType.Library) localVariables = new ArrayList<>();
-			else localVariables = load(originalItem.loadAsXml(), originalItem);
+			else localVariables = originalItem.hasContent() ? load(originalItem.loadAsXml(), originalItem) : new ArrayList<>();
 		}
 		return localVariables; 
 	}
