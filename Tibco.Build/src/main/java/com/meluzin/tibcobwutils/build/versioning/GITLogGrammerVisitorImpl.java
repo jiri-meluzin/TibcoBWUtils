@@ -85,6 +85,7 @@ final class GITLogGrammerVisitorImpl extends GITLogGrammerBaseVisitor<List<Chang
 		hash = ctx.getChild(1).toString();
 		comments.clear();
 		files.clear();
+		merge = Optional.empty();
 		return result;
 	}
 
