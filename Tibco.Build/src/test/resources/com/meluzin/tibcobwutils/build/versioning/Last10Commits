@@ -1,0 +1,82 @@
+commit 61b38995f217f8dd6edfa4e79281dfa35407242f
+Merge: dd964fbd daee656a
+Author: Jiri Meluzin <meluzinj>
+Date:   Mon Mar 7 22:30:36 2022 +0100
+
+    Merge branch 'master' of https://bitbucket.oskarmobil.cz/scm/tib/tools
+
+commit dd964fbd2fd604645746651fd92703865a6debae
+Author: Jiri Meluzin <meluzinj>
+Date:   Mon Mar 7 22:30:29 2022 +0100
+
+    TibcoBWBuilder
+    - fixed load of git log when merge contained file move
+
+M	TibcoBWBuilder/src/main/java/cz/vodafone/tibcobwbuilder/GitLogReader.java
+M	TibcoBWBuilder/src/main/java/cz/vodafone/tibcobwbuilder/TibcoBWBuilder.java
+M	TibcoBWBuilder/src/main/java/cz/vodafone/tibcobwbuilder/build/ChangesMatcher.java
+M	TibcoBWBuilder/src/test/java/cz/vodafone/tibcobwbuilder/ChangesMatcherTest.java
+
+commit daee656ad4ae2df7f4d6c7965967fa63d7cc6d0c
+Merge: 75bcbb8d c778082d
+Author: ATF <ATF>
+Date:   Mon Mar 7 21:19:54 2022 +0100
+
+    Merge branch 'master' of https://bitbucket.oskarmobil.cz/scm/tib/tools
+
+commit 75bcbb8decb780fc484e455245255a059555059f
+Author: ATF <ATF>
+Date:   Mon Mar 7 21:19:48 2022 +0100
+
+    ATFv2 - temp=> /tmp/atf, appmanage runs with -breaklock parameter
+
+M	atf/atf-runtime.xml
+M	atf/pkg/TIBant-bin-1.4.1/tibant.xml
+
+commit c778082dc3b10991b93cdd1ff3cab72c417ab7da
+Merge: 77ac0e12 c45c4daa
+Author: Jiri Fritzl <jfritzl@behaimits.com>
+Date:   Mon Mar 7 10:41:31 2022 +0100
+
+    Merge branch 'master' of https://bitbucket.oskarmobil.cz/scm/tib/tools
+
+commit 77ac0e12126204052c4575d357f97a4f77fc88cc
+Author: Jiri Fritzl <jfritzl@behaimits.com>
+Date:   Mon Mar 7 10:41:18 2022 +0100
+
+    oriV2 - install/deinstall is working
+
+M	ori/src/main/java/cz/vodafone/ori/AtfCall.groovy
+M	ori/src/main/java/cz/vodafone/ori/CommandsProcessor.groovy
+
+commit c45c4daaa3a6fc68b9215a3dc3ef415d344c312a
+Merge: f7f39bb1 7618e822
+Author: ATF <ATF>
+Date:   Mon Mar 7 10:40:10 2022 +0100
+
+    Merge branch 'master' of https://bitbucket.oskarmobil.cz/scm/tib/tools
+
+commit f7f39bb1a0467f54e23a5ce3c684df2b87290acc
+Author: ATF <ATF>
+Date:   Mon Mar 7 10:40:01 2022 +0100
+
+    ATFv2 - administrator stop is executed only if application is in Running/Starting state
+
+M	atf/atf-runtime.xml
+M	atf/pkg/TIBant-bin-1.4.1/tibant.xml
+
+commit 7618e8227e326cd5b0984e93cdec2beee14272ac
+Author: Jiri Fritzl <jfritzl@behaimits.com>
+Date:   Fri Mar 4 21:29:04 2022 +0100
+
+    oriV2 - ATF undeploy-> ATF delete -force
+
+M	ori/src/main/java/cz/vodafone/ori/AtfDomainConfiguration.groovy
+M	ori/src/main/java/cz/vodafone/ori/CommandsProcessor.groovy
+
+commit 216c19cddf1c93805d3c20697411ddfffa18656c
+Merge: 181292ea 125cd3a3
+Author: Jiri Fritzl <jfritzl@behaimits.com>
+Date:   Fri Mar 4 18:53:35 2022 +0100
+
+    Merge branch 'master' of https://bitbucket.oskarmobil.cz/scm/tib/tools

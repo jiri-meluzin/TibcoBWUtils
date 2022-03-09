@@ -112,4 +112,13 @@ public class GitLogParserTest {
 		assertNotNull(changes);
 		
 	}
+	@Test
+	public void testLast10CommitsRequest() {
+		
+		List<ChangeInfo> changes = new GitLogParser().getChanges(GitLogParserTest.class.getResourceAsStream("Last10Commits"));
+		assertNotNull(changes);
+		
+	}
 }
+
+
