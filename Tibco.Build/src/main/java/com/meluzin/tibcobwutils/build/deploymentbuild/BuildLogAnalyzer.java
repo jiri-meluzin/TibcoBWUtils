@@ -29,7 +29,7 @@ public class BuildLogAnalyzer {
 	}
 	public boolean containsCodeValidationErrors(List<BinExecutor> errorLog) {
 		BinExecutor b = getCodeValidation(errorLog);
-		return b != null && b.getStdError() != null && Lists.asList(b.getStdError().trim().split("\n")).stream().anyMatch(line -> !IGNORE_LIST.contains(line));		
+		return b != null && b.getStdError() != null && b.getStdError().trim().length() > 0 && Lists.asList(b.getStdError().trim().split("\n")).stream().anyMatch(line -> !IGNORE_LIST.contains(line));		
 	}
 	public BinExecutor getConfigValidation(List<BinExecutor> errorLog) {
 		if (errorLog == null) return null;
