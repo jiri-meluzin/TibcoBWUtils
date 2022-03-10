@@ -57,6 +57,7 @@ public final class BinExecutor {
 		T.V2<String, Boolean> stdOutputHolder = T.V(null, false);
 		T.V2<String, Boolean> stdErrorHolder = T.V(null, false);
 		try {
+			ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(2);
 			p = Runtime.getRuntime().exec(exec, null, directory);
 			Optional<ScheduledExecutorService> schedule = Optional.empty();
 			if (maxDuration.isPresent()) {
@@ -70,7 +71,6 @@ public final class BinExecutor {
 			}
 			InputStream input = p.getInputStream();
 			InputStream error = p.getErrorStream();
-			ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(2);
 			newFixedThreadPool.submit(getOutputReader(stdOutputHolder, input));
 			newFixedThreadPool.submit(getOutputReader(stdErrorHolder, error));			
 			int destroyCount = 0;
@@ -102,8 +102,8 @@ public final class BinExecutor {
 			int returnCode = p.exitValue();
 			finished.setA(true);
 			if (schedule.isPresent()) schedule.get().shutdownNow();
-			newFixedThreadPool.awaitTermination(10, TimeUnit.MILLISECONDS);
 			newFixedThreadPool.shutdown();
+			newFixedThreadPool.awaitTermination(1000, TimeUnit.MILLISECONDS);
 			
 			return new BinExecutor(exec, returnCode, stdOutputHolder.getA(), stdErrorHolder.getA(), started, new Date());
 		} catch (IOException | InterruptedException e) {
