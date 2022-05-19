@@ -64,12 +64,19 @@ public class EARComparer {
 	}	
 	private List<String> ignoreList = Lists.asList("library.manifest");	
 	public List<CompareResult> compare(Path oldPath, Path newPath) {
-		XmlBuilderFactory fac = new XmlBuilderFactory().setPreserveWhitespace(false);
 		List<T.V3<String, byte[], ZipEntry>> oldFiles = oldPath.toFile().exists() ? new LoadZipFile().load(oldPath) : Arrays.asList();
 		List<T.V3<String, byte[], ZipEntry>> newFiles = newPath.toFile().exists() ? new LoadZipFile().load(newPath) : Arrays.asList();
-		return compareArchives(oldPath, fac, oldFiles, newFiles);
+		return compareArchives(oldPath, oldFiles, newFiles);
 	}
-	private List<CompareResult> compareArchives(Path oldArchive, XmlBuilderFactory fac, List<T.V3<String, byte[], ZipEntry>> oldFiles,
+	public List<CompareResult> compareArchives(Path oldArchive, List<T.V3<String, byte[], ZipEntry>> oldFiles,
+			List<T.V3<String, byte[], ZipEntry>> newFiles) {
+		return compareArchives(oldArchive, new XmlBuilderFactory().setPreserveWhitespace(false), oldFiles, newFiles);
+	}
+	public List<CompareResult> compareArchives(List<T.V3<String, byte[], ZipEntry>> oldFiles,
+			List<T.V3<String, byte[], ZipEntry>> newFiles) {
+		return compareArchives(Paths.get("."), new XmlBuilderFactory().setPreserveWhitespace(false), oldFiles, newFiles);
+	}
+	public List<CompareResult> compareArchives(Path oldArchive, XmlBuilderFactory fac, List<T.V3<String, byte[], ZipEntry>> oldFiles,
 			List<T.V3<String, byte[], ZipEntry>> newFiles) {
 		List<Path> oldEarFilesString = oldFiles.stream().map(t -> t.getA()).sorted().map(p -> Paths.get(p)).collect(Collectors.toList());;
 		List<Path> newEarFilesString = newFiles.stream().map(t -> t.getA()).sorted().map(p -> Paths.get(p)).collect(Collectors.toList());
