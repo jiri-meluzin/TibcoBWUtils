@@ -7,12 +7,14 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
@@ -21,6 +23,7 @@ import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.IOUtils;
 
+import com.meluzin.functional.FileSearcher;
 import com.meluzin.functional.T;
 import com.meluzin.functional.T.V2;
 import com.meluzin.functional.T.V3;
@@ -44,10 +47,13 @@ public class LoadZipFile {
 		} catch (IOException e) {
 			throw new RuntimeException("Cannot read file ("+path+")", e);
 		}        
-		
+
 	}
 	public List<T.V3<String, byte[], ZipEntry>> load(String path, byte[] array) {
-        try (ZipInputStream zipFile = new ZipInputStream(new ByteArrayInputStream(array))) {
+		return load(path, new ByteArrayInputStream(array));
+	}
+	public List<T.V3<String, byte[], ZipEntry>> load(String path, InputStream dataFileStream) {
+        try (ZipInputStream zipFile = new ZipInputStream(dataFileStream)) {
             List<T.V3<String, byte[], ZipEntry>> entries = new ArrayList<>();// Collections.list(zipFile.entries()).stream().map(z -> (ZipEntry)z).map(e -> T.V(e.getName(), retrieveFileData(path, zipFile, e))).collect(Collectors.toList());
             ZipEntry entry;
             while((entry = zipFile.getNextEntry())!=null)
@@ -69,16 +75,32 @@ public class LoadZipFile {
 		}        
 		
 	}
-	
+	public void createZipArchiveFromFolder(Path outputPath, Path inputFolder) {
+		updateFile(outputPath, new FileSearcher().searchFiles(inputFolder, "glob:**/*", true).stream().filter(p -> p.toFile().isFile()).map(p -> createZipEntry(inputFolder, p)));
+	}
+	protected V3<String, byte[], ZipEntry> createZipEntry(Path inputFolder, Path p) {
+		try {
+			return T.V(inputFolder.relativize(p).toString().replace("\\", "/"),Files.readAllBytes(p), new ZipEntry(inputFolder.relativize(p).toString().replace("\\", "/")));
+		} catch (IOException e) {
+			throw new RuntimeException("Could not read file "+p, e);
+		}
+	}
 	public void updateFile(Path outputPath, List<T.V3<String, byte[], ZipEntry>> files) {
+		updateFile(outputPath, files.stream());
+	}
+	public void updateFile(Path outputPath, Stream<T.V3<String, byte[], ZipEntry>> files) {
 		try (ZipOutputStream zipFile = new ZipOutputStream(new FileOutputStream(outputPath.toFile()))) {
-			for (V3<String, byte[], ZipEntry> v : files) {
-				ZipEntry zipEntry = (ZipEntry)v.getC().clone();
-				zipEntry.setCompressedSize(-1);
-				zipEntry.setSize(v.getB().length);
-				zipFile.putNextEntry(zipEntry);
-				zipFile.write(v.getB());
-			}
+			files.forEach(v -> {
+				try {
+					ZipEntry zipEntry = (ZipEntry)v.getC().clone();
+					zipEntry.setCompressedSize(-1);
+					zipEntry.setSize(v.getB().length);
+					zipFile.putNextEntry(zipEntry);
+					zipFile.write(v.getB());
+				} catch (IOException e) {
+					throw new RuntimeException("Cannot store zip entry file ("+v.getA()+")" + e.getMessage(), e);
+				}
+			});
 		} catch (IOException e) {
 			throw new RuntimeException("Cannot store zip file ("+outputPath+")" + e.getMessage(), e);
 		}

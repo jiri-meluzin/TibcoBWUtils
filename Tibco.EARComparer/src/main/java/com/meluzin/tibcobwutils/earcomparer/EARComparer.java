@@ -167,6 +167,7 @@ public class EARComparer {
 	private boolean isArchiveFile(String oldFile) {
 		return 
 				oldFile.endsWith(".aar") ||
+				oldFile.endsWith(".ear") ||
 				oldFile.endsWith(".par") ||
 				oldFile.endsWith(".sar") ||
 				oldFile.endsWith(".zip");
