@@ -91,7 +91,7 @@ public class EARComparer {
 			List<CompareResult> results = new ArrayList<>();
 			if (deletedFiles.size() > 0) {
 				deletedFiles.forEach(f -> {
-					results.add(new CompareResult(f, CompareResultStatus.DifferentParsSarsAarsDeletedFile, "Deleted file: " + f));
+					results.add(new CompareResult(f, CompareResultStatus.DifferentParsSarsAarsDeletedFile, "Deleted file: " + f.toString().replace("\\", "/")));
 					if (isArchiveFile(f.toString())) {
 						List<V3<String, byte[], ZipEntry>> oldArchiveFiles = new LoadZipFile().load(f.toString().replace("\\", "/"), oldFiles.stream().filter(v -> v.getA().equals(f.toString().replace("\\", "/"))).map(v -> v.getB()).findAny().get());
 						results.addAll(compareArchives(f, fac, oldArchiveFiles, Arrays.asList()));
@@ -101,7 +101,7 @@ public class EARComparer {
 			}
 			if (addedFiles.size() > 0) {
 				addedFiles.forEach(f -> {					
-					results.add(new CompareResult(f, CompareResultStatus.DifferentParsSarsAarsAddedFile, "Added file: " + f));
+					results.add(new CompareResult(f, CompareResultStatus.DifferentParsSarsAarsAddedFile, "Added file: " + f.toString().replace("\\", "/")));
 					if (isArchiveFile(f.toString())) {
 						List<V3<String, byte[], ZipEntry>> newArchiveFiles = new LoadZipFile().load(f.toString().replace("\\", "/"), newFiles.stream().filter(v -> v.getA().equals(f.toString().replace("\\", "/"))).map(v -> v.getB()).findAny().get());
 						results.addAll(compareArchives(f, fac, Arrays.asList(), newArchiveFiles));
