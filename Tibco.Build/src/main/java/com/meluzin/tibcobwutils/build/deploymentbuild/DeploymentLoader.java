@@ -49,6 +49,10 @@ public class DeploymentLoader {
 		return true;
 	}
 	
+	public Optional<Library> getLibraryForLibWithoutSourceCode(String libName) {
+		return Optional.empty();
+	}
+	
 	public Set<Deployment> loadDeployments(Path branchPath, Function<Path, Library> libraryProducer) {
 		FileSearcher search = new FileSearcher();
 		Map<String, Library> libraries = new HashMap<>();
@@ -99,7 +103,12 @@ public class DeploymentLoader {
 	private Optional<Library> findLibrary(Map<String, Library> libraries, String name, Path deploymentPath) {
 		Library foundLibrary = libraries.get(name);
 		if (foundLibrary == null) {
-			log.severe("No library found for: " + name + " referenced from "+deploymentPath);
+			Optional<Library> libraryForLibWithoutSourceCode = getLibraryForLibWithoutSourceCode(name);
+			if (!libraryForLibWithoutSourceCode.isPresent()) {
+				log.severe("No library found for: " + name + " referenced from "+deploymentPath);
+			} else {
+				return libraryForLibWithoutSourceCode;
+			}
 		}
 		return Optional.ofNullable(foundLibrary);
 	}
