@@ -25,6 +25,7 @@ public class BuildLogRecorder {
 	private Map<Deployment, List<BinExecutor>> validationLogs = new HashMap<>();
 	private Map<Deployment, List<Path>> deploymentArchive = new HashMap<>();
 	private Map<Path, BinExecutor> archiveLogs = new HashMap<>();
+	private Map<Path, String> archiveErrors = new HashMap<>();
 	private Map<Library, BinExecutor> projlibLogs = new HashMap<>();
 	private Map<Deployment, List<Library>> deploymentLibrary = new HashMap<>();
 
@@ -50,6 +51,12 @@ public class BuildLogRecorder {
 		initMaps(deployment);
 		this.deploymentArchive.get(deployment).add(archive);
 		this.archiveLogs.put(archive, log);
+		return this;
+	}
+	public synchronized BuildLogRecorder addDeploymentArchiveBuildError(Deployment deployment, Path archive, String error) {
+		initMaps(deployment);
+		this.deploymentArchive.get(deployment).add(archive);
+		this.archiveErrors.put(archive, error);
 		return this;
 	}
 	public synchronized BuildLogRecorder addDeploymentLibraryBuild(Deployment deployment, Library library, BinExecutor log) {
@@ -90,10 +97,13 @@ public class BuildLogRecorder {
 			});		
 			if (deploymentArchive.containsKey(d)) {	
 				deployment.addChild("archives").addChildren(deploymentArchive.get(d), (archive, dp) -> {
-					NodeBuilder library = dp.addChild("archive").addAttribute("name", archive.getFileName());
+					NodeBuilder archiveElement = dp.addChild("archive").addAttribute("name", archive.getFileName());
 					if (archiveLogs.containsKey(archive)) {
 						BinExecutor be = archiveLogs.get(archive);
-						addBinExecItem(library, be);
+						addBinExecItem(archiveElement, be);
+					} else if (archiveErrors.containsKey(archive)) {
+						String error = archiveErrors.get(archive);
+						archiveElement.addAttribute("error", "true").addChild("error").setTextContent(error);
 					}
 				});		
 			}
@@ -174,16 +184,16 @@ public class BuildLogRecorder {
 				addAttribute("duration", duration);
 		return result;
 	}
-	private void addBinExecItem(NodeBuilder library, BinExecutor be) {
+	private void addBinExecItem(NodeBuilder itemNodeBuilder, BinExecutor be) {
 		if (be == null) {
-			library.addAttribute("disabled", true);
+			itemNodeBuilder.addAttribute("disabled", true);
 		} else {
-			library.addAttribute("started", be.getStarted());
-			library.addAttribute("finished", be.getFinished());
-			library.addAttribute("cmd", be.getExec());
-			library.addAttribute("returnCode", be.getReturnCode());
-			library.addChild("error").setTextContent(be.getStdError());
-			library.addChild("out").setTextContent(be.getStdOutput());
+			itemNodeBuilder.addAttribute("started", be.getStarted());
+			itemNodeBuilder.addAttribute("finished", be.getFinished());
+			itemNodeBuilder.addAttribute("cmd", be.getExec());
+			itemNodeBuilder.addAttribute("returnCode", be.getReturnCode());
+			itemNodeBuilder.addChild("error").setTextContent(be.getStdError());
+			itemNodeBuilder.addChild("out").setTextContent(be.getStdOutput());
 		}
 	}
 	

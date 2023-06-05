@@ -119,8 +119,8 @@ final class GITLogGrammerVisitorImpl extends GITLogGrammerBaseVisitor<List<Chang
 		}
 		try {
 			return FileChangeInfo.builder().
-					withLocation(Paths.get(parts.length == 2 ? parts[1] : parts[2])).
-					withOriginalLocation(Optional.ofNullable(parts.length == 3 ? Paths.get(parts[1] ): null)).
+					withLocation(Paths.get(Optional.of(parts.length == 2 ? parts[1] : parts[2]).map(s -> s.replaceAll("\\\"(.*)\\\"","$1").replaceAll("\\\\[0-9]{1,3}", "")).orElse(null))).
+					withOriginalLocation(Optional.ofNullable(parts.length == 3 ? Paths.get(Optional.of(parts[1]).map(s -> s.replaceAll("\\\"(.*)\\\"","$1")).orElse(null) ): null)).
 					withStatus(status).
 					build();
 		} catch (Exception e) {

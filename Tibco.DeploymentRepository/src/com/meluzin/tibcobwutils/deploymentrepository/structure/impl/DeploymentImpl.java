@@ -177,6 +177,7 @@ public class DeploymentImpl implements Deployment {
 
 			List<String> aliases = designtimelibsLines.
                 filter(s -> !s.startsWith("#")).
+                filter(s -> s.trim().length() > 0).
                 map(s -> s.replaceAll("\\\\", "").split("=")).
                 sorted((parts1, parts2) -> Integer.parseInt(parts1[0]) - Integer.parseInt(parts2[0])).
                 map(parts -> parts[1]).collect(Collectors.toList());

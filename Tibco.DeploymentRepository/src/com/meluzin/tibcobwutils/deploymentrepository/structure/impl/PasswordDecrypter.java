@@ -4,6 +4,8 @@ import java.io.ByteArrayOutputStream;
 import java.security.Key;
 import java.security.SecureRandom;
 import java.util.Base64;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -11,12 +13,15 @@ import javax.crypto.CipherOutputStream;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.spec.IvParameterSpec;
 
+import com.meluzin.functional.Log;
+
 
 public class PasswordDecrypter {
-
+	private static final Logger log = Log.get();
 	private static final byte[] TIBCO_SECRET = { 28, -89, -101, -111, 91, -113, 26, -70, 98, -80, -23, -53, -118, 93, -83, -17,
 			28, -89, -101, -111, 91, -113, 26, -70 };
 	public String decrypt(String encrypted) {
+		if (encrypted == null || !encrypted.startsWith("#!")) return encrypted;
 		try {
 			byte[] base64EncryptedBytes = Base64.getDecoder().decode(encrypted.substring(2));
 			Cipher cipher = Cipher.getInstance("DESede/CBC/PKCS5Padding", "SunJCE");;
@@ -30,7 +35,7 @@ public class PasswordDecrypter {
 
 			return new String(decrypted);
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.log(Level.WARNING, "Cannot decrypt", e);
 			return encrypted;
 		}
 	}
@@ -68,7 +73,7 @@ public class PasswordDecrypter {
 			String encrypted = Base64.getEncoder().encodeToString(finalBytes);
 			return new String("#!" + encrypted);
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.log(Level.WARNING, "Cannot decrypt", e);
 			return decrypted;
 		}
 	}
