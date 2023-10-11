@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import com.meluzin.fluentxml.xml.builder.NodeBuilder;
 import com.meluzin.fluentxml.xml.builder.XmlBuilderFactory;
+import com.meluzin.fluentxml.xml.builder.XmlBuilderSAXFactory;
 import com.meluzin.functional.Log;
 
 public interface Item {
@@ -19,14 +20,14 @@ public interface Item {
 	public InputStream getContent();
 	public default NodeBuilder loadAsXml() {
 		try {
-			return new XmlBuilderFactory().parseDocument(getContent());
+			return XmlBuilderSAXFactory.getSingleton().parseDocument(getContent());
 		} catch (RuntimeException ex) {
 			throw new RuntimeException("Cannot load XML from " + getItemSource().getAbsolutePath() + "@" + getPath(), ex);
 		}
 	}
 	public default Item updateContent(NodeBuilder xml) {
 		try (OutputStream stream = setContent()) {
-			new XmlBuilderFactory().renderNode(xml, stream);
+			XmlBuilderSAXFactory.getSingleton().renderNode(xml, stream);
 		} catch (IOException e) {
 			throw new RuntimeException("Could not update content (" + getPath() + ")", e);
 		}

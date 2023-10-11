@@ -134,12 +134,14 @@ public class RepositoryImpl implements Repository {
 		}
 		Item createdItem = inMemoryChanges.createItem(repositoryItemParent.getCurrentItem(), name, isFolder);
 		
-		if (previousChild.isPresent() && !isFolder/* && type == ItemSourceType.Deployment */) {
+		if (previousChild.isPresent()) {
 			repositoryItemParent.children.remove(previousChild.get());
-			try (OutputStream setContent = createdItem.setContent()){
-				IOUtils.copy(previousChild.get().getContent(), setContent);
-			} catch (IOException e) {
-				throw new RuntimeException("Could not copy content from previous version of item to new item ("+createdItem.getDeploymentReference()+")", e);
+			if(!isFolder/* && type == ItemSourceType.Deployment */) {
+				try (OutputStream setContent = createdItem.setContent()){
+					IOUtils.copy(previousChild.get().getContent(), setContent);
+				} catch (IOException e) {
+					throw new RuntimeException("Could not copy content from previous version of item to new item ("+createdItem.getDeploymentReference()+")", e);
+				}
 			}
 		}
 		repositoryItemParent.children.add(new RepositoryItem(repositoryItemParent, createdItem, alternatives));

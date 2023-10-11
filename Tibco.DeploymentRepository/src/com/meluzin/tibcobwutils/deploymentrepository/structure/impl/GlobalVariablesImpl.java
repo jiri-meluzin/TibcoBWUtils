@@ -1,5 +1,7 @@
 package com.meluzin.tibcobwutils.deploymentrepository.structure.impl;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.InvalidParameterException;
@@ -18,6 +20,8 @@ import java.util.stream.Stream;
 
 import com.meluzin.fluentxml.xml.builder.NodeBuilder;
 import com.meluzin.fluentxml.xml.builder.XmlBuilderFactory;
+import com.meluzin.fluentxml.xml.builder.XmlBuilderSAXFactory;
+import com.meluzin.fluentxml.xml.builder.XmlBuilderSAXFactory.Settings;
 import com.meluzin.functional.Lists;
 import com.meluzin.functional.T;
 import com.meluzin.tibcobwutils.deploymentrepository.structure.GlobalVariable;
@@ -161,15 +165,25 @@ public class GlobalVariablesImpl implements GlobalVariables {
 		if (isChanged()) {
 			NodeBuilder xml = render(getLocalVariables());
 			if (originalItem.getItemSource().getType() == ItemSourceType.Library) {
-				originalItem = repository.createItem(originalItem.getPath()).updateContent(xml);
+				Item createItem = repository.createItem(originalItem.getPath());
+				originalItem = renderGVarsXML(xml, createItem);
 			}
 			else {
-				originalItem.updateContent(xml);
+				renderGVarsXML(xml, originalItem);
 			}
 		}
 		isChanged = false;
 		if (childVariables != null) childVariables.forEach(c -> c.save());
 		//super.save();
+	}
+	private Item renderGVarsXML(NodeBuilder xml, Item createItem) {
+
+			try (OutputStream stream = createItem.setContent()) {
+				XmlBuilderSAXFactory.getSingleton().renderNode(xml,Settings.builder().padding("\t").build(), true,  stream);
+			} catch (IOException e) {
+				throw new RuntimeException("Could not update content (" + getPath() + ")", e);
+			}
+			return createItem;
 	}
 	
 	@Override
