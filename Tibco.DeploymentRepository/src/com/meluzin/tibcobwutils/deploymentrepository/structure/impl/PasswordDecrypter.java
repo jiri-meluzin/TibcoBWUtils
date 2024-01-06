@@ -3,6 +3,7 @@ package com.meluzin.tibcobwutils.deploymentrepository.structure.impl;
 import java.io.ByteArrayOutputStream;
 import java.security.Key;
 import java.security.SecureRandom;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,22 +21,31 @@ public class PasswordDecrypter {
 	private static final Logger log = Log.get();
 	private static final byte[] TIBCO_SECRET = { 28, -89, -101, -111, 91, -113, 26, -70, 98, -80, -23, -53, -118, 93, -83, -17,
 			28, -89, -101, -111, 91, -113, 26, -70 };
+	public static void main(String[] args) {
+		System.out.println(new PasswordDecrypter().decrypt("#!fZHnt+lQSQ4WrHxwaz2Bi6nPwspkfw5Qk6uDuF/xjwhE6TRjX+SCXnlaD+qDUYQ4"));
+	}
 	public String decrypt(String encrypted) {
 		if (encrypted == null || !encrypted.startsWith("#!")) return encrypted;
 		try {
+			
+			synchronized (PasswordDecrypter.class) {
+			
 			byte[] base64EncryptedBytes = Base64.getDecoder().decode(encrypted.substring(2));
-			Cipher cipher = Cipher.getInstance("DESede/CBC/PKCS5Padding", "SunJCE");;
+			Cipher cipher = Cipher.getInstance("DESede/CBC/PKCS5Padding");;
 			int blockSize = cipher.getBlockSize();
 			byte[] arrayOfByte = new byte[blockSize];
 
 			readIV(base64EncryptedBytes, arrayOfByte);
-			Key key = new RawKey("DESede", TIBCO_SECRET);
-			cipher.init(2, (Key) key, new IvParameterSpec(arrayOfByte));
+			Key key = new RawKey("DESede", Arrays.copyOf(TIBCO_SECRET, TIBCO_SECRET.length));
+			cipher.init(Cipher.DECRYPT_MODE , (Key) key, new IvParameterSpec(arrayOfByte));
 			char[] decrypted = (decrypt(base64EncryptedBytes, blockSize, cipher));
-
-			return new String(decrypted);
+			String string = new String(decrypted);
+			
+			
+			return string;
+			}
 		} catch (Exception e) {
-			log.log(Level.WARNING, "Cannot decrypt", e);
+			log.log(Level.WARNING, "Cannot decrypt value: "+encrypted, e);
 			return encrypted;
 		}
 	}
@@ -49,7 +59,7 @@ public class PasswordDecrypter {
 			SecureRandom.getInstance("SHA1PRNG").nextBytes(randomBytes);
 
 //			readIV(paramArrayOfByte1, arrayOfByte);
-			Key rawKey = new RawKey("DESede", TIBCO_SECRET);
+			Key rawKey = new RawKey("DESede", Arrays.copyOf(TIBCO_SECRET, TIBCO_SECRET.length));
 			cipher.init(Cipher.ENCRYPT_MODE, (Key) rawKey, new IvParameterSpec(randomBytes));
 //			char[] decrypted = (decrypt(paramArrayOfByte1, i, localCipher));
 
