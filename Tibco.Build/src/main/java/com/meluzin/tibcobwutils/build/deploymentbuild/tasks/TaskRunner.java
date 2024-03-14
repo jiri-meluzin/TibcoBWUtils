@@ -9,10 +9,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
-
 import com.meluzin.functional.Log;
-import com.meluzin.functional.Utils;
 
 public class TaskRunner {
 	// Used as helper task, when there are no other tasks

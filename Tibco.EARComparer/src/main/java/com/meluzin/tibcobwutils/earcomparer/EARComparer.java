@@ -13,7 +13,6 @@ import java.util.zip.ZipEntry;
 
 import com.meluzin.fluentxml.xml.builder.NodeBuilder;
 import com.meluzin.fluentxml.xml.builder.XmlBuilderFactory;
-import com.meluzin.functional.FileSearcher;
 import com.meluzin.functional.Lists;
 import com.meluzin.functional.T;
 import com.meluzin.functional.T.V3;
@@ -47,7 +46,6 @@ public class EARComparer {
 		Path p1 = Paths.get("!/AMDOCS_HLAPIv8_IO.aar!/Adapters/AMDOCS_HLAPIv8_IO.adapter");
 		Path p2 = Paths.get("!/AMDOCS_HLAPIv8_IO.aar!//Adapters/AMDOCS_HLAPIv8_IO.adapter");
 		System.out.println(p1 +" "+ p2+" " + p1.equals(p2));
-		FileSearcher s = new FileSearcher();
 //		s.searchFiles(Paths.get("T:/temp/compare/ears"), "glob:**/ERMS_API_IO.ear", false).forEach(p -> {
 //			Path p1 =  p.getParent().getParent().resolve("init-build").resolve("FILENET_API_IO.ear");
 //			System.out.println(p + " " + p1);
@@ -187,7 +185,6 @@ public class EARComparer {
 			if (isXmlFile(fileName)) {
 				NodeBuilder oldFileXml = fac.parseDocument(new ByteArrayInputStream(oldFile.getB()));
 				NodeBuilder newFileXml = fac.parseDocument(new ByteArrayInputStream(newFile.getB()));
-				Optional<String> adapterName = oldFileXml.search("adapter").map(n -> n.getAttribute("name")).findFirst();
 				if (fileName.equals("TIBCO.xml")) {
 					oldFileXml = normalizeTibcoXML(oldFileXml);
 					newFileXml = normalizeTibcoXML(newFileXml);					

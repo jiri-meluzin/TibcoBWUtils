@@ -44,8 +44,7 @@ import net.sourceforge.argparse4j.inf.Namespace;
 public class FullConfigChecker {
 	private static final String INSTANCE_RUNTIME_VARIABLES = "INSTANCE_RUNTIME_VARIABLES";
 	private static final String RUNTIME_VARIABLES = "Runtime Variables";
-	private static final List<String> SERVICE_INSTANCE_VARIABLES = Lists.asList(INSTANCE_RUNTIME_VARIABLES, RUNTIME_VARIABLES);
-
+	
 	public static void main(String[] args) {
 		ArgumentParser argParser = ArgumentParsers.newArgumentParser("Full config checker", true, "-")
 				.description("Checks full config global variables against tibco bw code.");

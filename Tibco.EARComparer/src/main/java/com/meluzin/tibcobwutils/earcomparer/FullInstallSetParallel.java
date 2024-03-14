@@ -77,7 +77,6 @@ public class FullInstallSetParallel {
 	public void compare() {
 		
 		SDKPropertiesLoader loader = new SDKPropertiesLoader(tibcoHome);
-		List<CompareResult> result;
 		ConfigComparer configComparer = new ConfigComparer(loader);
 		
 		List<Path> builtEars = new FileSearcher().searchFiles(built, "glob:**/*"+mask+"*.ear", false);

@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.hamcrest.CoreMatchers;
-import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 
 public class GitLogParserTest {

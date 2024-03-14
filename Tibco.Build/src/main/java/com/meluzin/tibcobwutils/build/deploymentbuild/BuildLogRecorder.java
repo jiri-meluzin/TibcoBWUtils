@@ -20,6 +20,7 @@ import com.meluzin.functional.T;
 import com.meluzin.functional.T.V2;
 
 public class BuildLogRecorder {
+	@SuppressWarnings("unused")
 	private static Logger log = Log.get();
 
 	private Map<Deployment, List<BinExecutor>> validationLogs = new HashMap<>();

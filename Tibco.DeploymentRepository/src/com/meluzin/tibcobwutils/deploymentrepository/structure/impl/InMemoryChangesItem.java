@@ -16,7 +16,6 @@ import org.apache.commons.io.output.ByteArrayOutputStream;
 import com.meluzin.functional.Log;
 import com.meluzin.tibcobwutils.deploymentrepository.structure.Item;
 import com.meluzin.tibcobwutils.deploymentrepository.structure.ItemSource;
-import com.meluzin.tibcobwutils.deploymentrepository.structure.ItemSourceType;
 
 public class InMemoryChangesItem implements Item {
 	private Item originalItem;

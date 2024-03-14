@@ -10,7 +10,6 @@ import com.meluzin.functional.FileSearcher;
 import com.meluzin.functional.Log;
 import com.meluzin.tibcobwutils.build.deploymentbuild.BinExecutor;
 import com.meluzin.tibcobwutils.build.deploymentbuild.BuildBranchParallel;
-import com.meluzin.tibcobwutils.build.deploymentbuild.BuildTaskComputer;
 import com.meluzin.tibcobwutils.build.deploymentbuild.Deployment;
 import com.meluzin.tibcobwutils.build.deploymentbuild.tasks.Task;
 
@@ -18,12 +17,10 @@ public class TaskBuildDeployment implements Task {
 	private static Logger log = Log.get();
 	private BuildBranchParallel buildBranchParallel;
 	private Deployment deployment;
-	private BuildTaskComputer btc;
 	private Path archive;
-	private TaskBuildDeployment(BuildBranchParallel buildBranchParallel, Deployment deployment, Path archive, BuildTaskComputer btc) {
+	private TaskBuildDeployment(BuildBranchParallel buildBranchParallel, Deployment deployment, Path archive) {
 		this.buildBranchParallel = buildBranchParallel;
 		this.deployment = deployment;
-		this.btc = btc;
 		this.archive = archive;
 	}
 	@Override
@@ -50,10 +47,10 @@ public class TaskBuildDeployment implements Task {
 		buildBranchParallel.getBuildLog().addDeploymentArchiveBuild(deployment, archive, result);
 		
 	}
-	public static Stream<Task> buildDeploymentTask(BuildBranchParallel buildBranchParallel, Deployment deployment, BuildTaskComputer btc) {
+	public static Stream<Task> buildDeploymentTask(BuildBranchParallel buildBranchParallel, Deployment deployment) {
 		FileSearcher fs = new FileSearcher();
 		List<Path> archives = fs.searchFiles(deployment.getPath(), "glob:**/*.archive", true);
-		return archives.stream().map(p ->  new TaskBuildDeployment(buildBranchParallel, deployment, p, btc));		
+		return archives.stream().map(p ->  new TaskBuildDeployment(buildBranchParallel, deployment, p));		
 	}
 
 }

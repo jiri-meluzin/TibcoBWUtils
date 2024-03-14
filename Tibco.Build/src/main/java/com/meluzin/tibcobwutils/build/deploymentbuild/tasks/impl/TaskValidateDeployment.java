@@ -7,7 +7,6 @@ import java.util.stream.Stream;
 import com.meluzin.functional.Log;
 import com.meluzin.tibcobwutils.build.deploymentbuild.BinExecutor;
 import com.meluzin.tibcobwutils.build.deploymentbuild.BuildBranchParallel;
-import com.meluzin.tibcobwutils.build.deploymentbuild.BuildTaskComputer;
 import com.meluzin.tibcobwutils.build.deploymentbuild.Deployment;
 import com.meluzin.tibcobwutils.build.deploymentbuild.tasks.Task;
 
@@ -15,11 +14,9 @@ public class TaskValidateDeployment implements Task {
 	private static Logger log = Log.get();
 	private BuildBranchParallel buildBranchParallel;
 	private Deployment deployment;
-	private BuildTaskComputer btc;
-	private TaskValidateDeployment(BuildBranchParallel buildBranchParallel, Deployment deployment, BuildTaskComputer btc) {
+	private TaskValidateDeployment(BuildBranchParallel buildBranchParallel, Deployment deployment) {
 		this.buildBranchParallel = buildBranchParallel;
 		this.deployment = deployment;
-		this.btc = btc;
 	}
 	@Override
 	public void run() {
@@ -51,8 +48,8 @@ public class TaskValidateDeployment implements Task {
 		buildBranchParallel.getBuildLog().addDeploymentValidation(deployment, resultConfig);
 		
 	}
-	public static Stream<Task> validateDeploymentTask(BuildBranchParallel buildBranchParallel, Deployment deployment, BuildTaskComputer btc) {
-		return Stream.of(new TaskValidateDeployment(buildBranchParallel, deployment, btc));		
+	public static Stream<Task> validateDeploymentTask(BuildBranchParallel buildBranchParallel, Deployment deployment) {
+		return Stream.of(new TaskValidateDeployment(buildBranchParallel, deployment));		
 	}
 
 }

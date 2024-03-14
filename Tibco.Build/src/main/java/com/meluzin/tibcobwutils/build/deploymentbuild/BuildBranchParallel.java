@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -268,8 +267,8 @@ public class BuildBranchParallel implements BuildContext {
 		deploymentCanBeBuilt.forEach(d -> { 
 			
 			Stream<Task> librariesTasks = d.getDeclaredLibraries().stream().map(l -> TaskBuildLibrary.buildLibraryTask(this, l, btc));
-			Stream<Task> deploymentTask = TaskBuildDeployment.buildDeploymentTask(this, d, btc);
-			Stream<Task> validationTask = TaskValidateDeployment.validateDeploymentTask(this, d, btc);
+			Stream<Task> deploymentTask = TaskBuildDeployment.buildDeploymentTask(this, d);
+			Stream<Task> validationTask = TaskValidateDeployment.validateDeploymentTask(this, d);
 			
 			Stream<Task> tasks = Stream.concat(Stream.concat(librariesTasks, deploymentTask), validationTask);
 			new TaskRunner().setOnErrorAction((task, ex) -> {

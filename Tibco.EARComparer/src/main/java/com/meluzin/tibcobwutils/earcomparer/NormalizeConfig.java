@@ -2,7 +2,6 @@ package com.meluzin.tibcobwutils.earcomparer;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -151,13 +150,6 @@ public class NormalizeConfig {
 			}
 		};
 	}
-	private NodeBuilder loadAndSortUpdateConfig(Path config1, String env) {
-		NodeBuilder nvPairs1 = loadConfigPart(config1, env);
-		EARComparer.decryptNVPasswords(nvPairs1);
-		nvPairs1.sortChildren(sortNVPairs());
-		return nvPairs1;
-	}
-	
 	public NodeBuilder loadConfigPart(Path config1, String env) {
 		XmlBuilderFactory fac = new XmlBuilderFactory().setPreserveWhitespace(false);
 		NodeBuilder n = fac.loadFromFile(config1);

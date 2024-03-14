@@ -10,7 +10,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.meluzin.fluentxml.xml.builder.NodeBuilder;
-import com.meluzin.fluentxml.xml.builder.XmlBuilderFactory;
 import com.meluzin.fluentxml.xml.builder.XmlBuilderSAXFactory;
 import com.meluzin.functional.Log;
 

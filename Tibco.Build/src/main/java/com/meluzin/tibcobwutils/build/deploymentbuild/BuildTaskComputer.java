@@ -1,6 +1,5 @@
 package com.meluzin.tibcobwutils.build.deploymentbuild;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -11,7 +10,6 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import com.meluzin.functional.Lists;
 import com.meluzin.functional.Log;
 import com.meluzin.functional.T;
 import com.meluzin.functional.T.V2;
@@ -20,7 +18,6 @@ public class BuildTaskComputer {
 	private static Logger log = Log.get();
 	private Map<Library, Set<Deployment>> libraryUsage;
 	private Map<Library, Deployment> librarySource;		
-	private Map<Deployment, Set<Deployment>> deploymentDependencies;
 
 	private Set<Library> unchangedLibraries = new HashSet<>();
 	private Set<Library> finishedLibraries = new HashSet<>();
@@ -48,7 +45,6 @@ public class BuildTaskComputer {
 	public BuildTaskComputer(Set<Deployment> allDeployments, Set<Deployment> changedDeployments) {
 		this.libraryUsage = getLibraryUsage(allDeployments);
 		this.librarySource = librarySource(allDeployments);		
-		this.deploymentDependencies = getDeploymentDependencies(allDeployments, librarySource);
 		this.changedDeployments = changedDeployments;
 	}
 
@@ -139,19 +135,6 @@ public class BuildTaskComputer {
 			getPool().execute(() -> finishedObservable.setNewValueAndNotify());			
 		}
 		return deploymentsCanBeBuilt;
-	}
-
-	private Map<Deployment, Set<Deployment>> getDeploymentDependencies(Set<Deployment> allDeployments,
-			Map<Library, Deployment> librarySource) {
-		Map<Deployment, Set<Deployment>> deploymentDependencies = new HashMap<>();
-		
-		allDeployments.forEach(d -> {
-			if (!deploymentDependencies.containsKey(d)) deploymentDependencies.put(d, new HashSet<>());
-			d.getDependencies().forEach(l -> {
-				deploymentDependencies.get(d).add(librarySource.get(l));
-			});
-		});
-		return deploymentDependencies;
 	}
 
 	private Map<Library, Deployment> librarySource(Set<Deployment> allDeployments) {

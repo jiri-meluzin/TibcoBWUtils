@@ -36,13 +36,10 @@ public class FullConfigsModel {
 	private static final String PROCESS_ARCHIVE_ELEMENT_NAME = "processArchive";
 	private static final String ADAPTER_ARCHIVE_ELEMENT_NAME = "adapterArchive";
 	private static final List<String> ARCHIVES_ELEMENT_NAMES = Lists.asList(ADAPTER_ARCHIVE_ELEMENT_NAME, PROCESS_ARCHIVE_ELEMENT_NAME);
-	private static final String BW = "bw";
 	private static final String INSTANCE_RUNTIME_VARIABLES = "INSTANCE_RUNTIME_VARIABLES";
 	private static final String RUNTIME_VARIABLES = "Runtime Variables";
-	private static final String GLOBAL_VARIABLES = "Global Variables";
 	private static final String SDK_VARIABLES = "Adapter SDK Properties";
 
-	private static final List<String> ALL_VARIRABLES = Lists.asList(INSTANCE_RUNTIME_VARIABLES, RUNTIME_VARIABLES, GLOBAL_VARIABLES);
 	private static final List<String> INSTANCE_VARIABLES = Lists.asList(INSTANCE_RUNTIME_VARIABLES, RUNTIME_VARIABLES);
 	
 	private static final Map<String, ServiceType> SERVICE_TYPES = Stream.of(T.V(ADAPTER_ARCHIVE_ELEMENT_NAME, ServiceType.Adapter), T.V(PROCESS_ARCHIVE_ELEMENT_NAME, ServiceType.BW)).collect(Collectors.toMap(v -> v.getA(), v -> v.getB()));
@@ -91,20 +88,6 @@ public class FullConfigsModel {
 		}
 		return collect.containsKey(adapterName) ? Optional.of(collect.get(adapterName)) : Optional.empty();
 	}
-	private Set<V2<String, String>> getServiceSDKProperties(Environment env, Archive archive, Service service) {
-		String version = getServiceProductVersion(env, archive, service);
-		
-		switch (service.getServiceType()) {
-		case BW:
-			return bwPropertiesNames.get(version);
-		case Adapter:
-			return adaptersPropertiesNames.get(translateArchiveAdapterTypeToAdapterFolderName(availableAdapters, service.getArchiveAdapterName()));
-		default:
-			break;
-		}
-		return new HashSet<>();
-	}
-
 
 	public String getServiceProductVersion(Environment env, Archive archive, Service service) {
 		return getInstances(env, archive, service).stream().map(n -> getInstanceConfig(env, archive, service, n)).map(n -> n.get()).map(n -> getServiceProductVersion(n)).flatMap(s -> s).sorted().findFirst().get();
@@ -563,7 +546,6 @@ public class FullConfigsModel {
 		Optional<NodeBuilder> serviceSDKVariablesElement = getServiceSDKVariablesElement(env, archive, service);
 		if (!serviceSDKVariablesElement.isPresent()) {
 			Optional<NodeBuilder> serviceConfig = getServiceConfig(env, archive, service);
-			List<String> names = Lists.asList(SDK_VARIABLES);
 			int childIndex = serviceConfig.get().searchFirstByName("failureCount").getChildIndex();
 			serviceSDKVariablesElement = Optional.of(serviceConfig.get().addChild("NVPairs", childIndex).addAttribute("name", SDK_VARIABLES));
 			
