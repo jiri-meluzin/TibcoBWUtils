@@ -144,6 +144,7 @@ public class EARComparer {
 	}
 	private boolean isXmlFile(String fileName) {
 		return 
+				fileName.endsWith(".archive") || 
 				fileName.endsWith(".process") || 
 				fileName.endsWith(".xml") ||  
 				fileName.endsWith(".xslt") || 
