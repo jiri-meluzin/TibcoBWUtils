@@ -194,6 +194,7 @@ public class GlobalVariablesImpl implements GlobalVariables {
 
 	@Override
 	public Optional<GlobalVariable> resolve(String varRelativePath) {
+		if (varRelativePath.startsWith("/")) return resolve(varRelativePath.substring(1));
 		if (varRelativePath.length() == 0) return Optional.empty();
 		String[] parts = varRelativePath.split("/");
 		String name = parts[0];
@@ -215,6 +216,7 @@ public class GlobalVariablesImpl implements GlobalVariables {
 	
 	@Override
 	public GlobalVariable resolveOrCreate(String varRelativePath) {
+		if (varRelativePath.startsWith("/")) return resolveOrCreate(varRelativePath.substring(1));
 		String[] parts = varRelativePath.split("/");
 		String name = parts[0];
 		if (parts.length > 1) {
@@ -237,6 +239,7 @@ public class GlobalVariablesImpl implements GlobalVariables {
 	
 	@Override
 	public Optional<GlobalVariables> resolveVars(String varRelativePath) {
+		if (varRelativePath.startsWith("/")) return resolveVars(varRelativePath.substring(1));
 		if (varRelativePath.length() == 0) return Optional.empty();
 		String[] parts = varRelativePath.split("/");
 		String name = parts[0];
