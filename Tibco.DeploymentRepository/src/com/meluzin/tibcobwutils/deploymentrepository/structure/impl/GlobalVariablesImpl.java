@@ -287,7 +287,7 @@ public class GlobalVariablesImpl implements GlobalVariables {
 			}
 			String resolvedValue = resolve.get().getValue();
 			if ("Password".equals(resolve.get().getType())) {
-				resolvedValue = new PasswordDecrypter().decrypt(resolvedValue);
+				resolvedValue = new PasswordDecrypter(new ConstantKeyProvider()).decrypt(resolvedValue);
 			}
 			m.appendReplacement(sb, resolvedValue);
 		}

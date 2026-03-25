@@ -16,7 +16,9 @@ import com.meluzin.fluentxml.xml.builder.XmlBuilderFactory;
 import com.meluzin.functional.Lists;
 import com.meluzin.functional.T;
 import com.meluzin.functional.T.V3;
+import com.meluzin.tibcobwutils.deploymentrepository.structure.impl.ConstantKeyProvider;
 import com.meluzin.tibcobwutils.deploymentrepository.structure.impl.PasswordDecrypter;
+import com.meluzin.tibcobwutils.deploymentrepository.structure.impl.PasswordDecrypterServiceProviderFactory;
 import com.meluzin.tibcobwutils.earcomparer.load.LoadZipFile;
 
 
@@ -326,7 +328,7 @@ public class EARComparer {
 		xml.search(true, n -> "NameValuePairPassword".equals(n.getName())).forEach(n -> {
 			NodeBuilder val = n.searchFirstByName("value");
 			if (val != null && val.getTextContent() != null) {
-				val.setTextContent(new PasswordDecrypter().decrypt(val.getTextContent()));
+				val.setTextContent(new PasswordDecrypter(new ConstantKeyProvider()).decrypt(val.getTextContent()));
 			}
 		});
 	}

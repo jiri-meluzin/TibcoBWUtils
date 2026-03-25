@@ -1,6 +1,7 @@
 package com.meluzin.tibcobwutils.earcomparer;
 
 import com.meluzin.tibcobwutils.deploymentrepository.structure.impl.PasswordDecrypter;
+import com.meluzin.tibcobwutils.deploymentrepository.structure.impl.PasswordDecrypterServiceProviderFactory;
 
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
@@ -22,9 +23,9 @@ public class Decrypter {
 		String password = res.getString("password");
 		
 		switch (action) {
-		case ENCRYPT: System.out.println(new PasswordDecrypter().encrypt(password));
+		case ENCRYPT: System.out.println(new PasswordDecrypter(PasswordDecrypterServiceProviderFactory.getInstance().getProvider()).encrypt(password));
 			break;
-		case DECRYPT: System.out.println(new PasswordDecrypter().decrypt(password));
+		case DECRYPT: System.out.println(new PasswordDecrypter(PasswordDecrypterServiceProviderFactory.getInstance().getProvider()).decrypt(password));
 			break;
 		}
 		

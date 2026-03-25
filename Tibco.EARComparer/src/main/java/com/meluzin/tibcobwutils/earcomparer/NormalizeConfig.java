@@ -15,6 +15,7 @@ import com.meluzin.functional.Lists;
 import com.meluzin.functional.T;
 import com.meluzin.functional.T.V2;
 import com.meluzin.tibcobwutils.deploymentrepository.structure.impl.PasswordDecrypter;
+import com.meluzin.tibcobwutils.deploymentrepository.structure.impl.PasswordDecrypterServiceProviderFactory;
 import com.meluzin.tibcobwutils.earcomparer.fullconfig.model.FullConfigsModel;
 import com.meluzin.tibcobwutils.earcomparer.fullconfig.model.SDKPropertiesLoader;
 
@@ -90,7 +91,7 @@ public class NormalizeConfig {
 			p.sortChildren(sortBwprocesses());
 		});
 		if (decrypt) {
-			n1.search(true, p -> "password".equals(p.getName())).forEach(p -> p.setTextContent(new PasswordDecrypter().decrypt(p.getTextContent())));
+			n1.search(true, p -> "password".equals(p.getName())).forEach(p -> p.setTextContent(new PasswordDecrypter(PasswordDecrypterServiceProviderFactory.getInstance().getProvider()).decrypt(p.getTextContent())));
 		}
 		n1.search(true, n -> Lists.asList("httpRepoInstance", "rvRepoInstance", "checkpoints").contains(n.getName())).
 			collect(Collectors.toList()).

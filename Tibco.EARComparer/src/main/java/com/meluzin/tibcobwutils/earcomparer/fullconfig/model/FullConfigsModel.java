@@ -29,6 +29,7 @@ import com.meluzin.tibcobwutils.deploymentrepository.structure.ItemType;
 import com.meluzin.tibcobwutils.deploymentrepository.structure.Repository;
 import com.meluzin.tibcobwutils.deploymentrepository.structure.impl.ConfigImpl;
 import com.meluzin.tibcobwutils.deploymentrepository.structure.impl.PasswordDecrypter;
+import com.meluzin.tibcobwutils.deploymentrepository.structure.impl.PasswordDecrypterServiceProviderFactory;
 import com.meluzin.tibcobwutils.deploymentrepository.structure.impl.RepositoryImpl;
 import com.meluzin.tibcobwutils.earcomparer.fullconfig.model.Service.ServiceType;
 
@@ -199,7 +200,7 @@ public class FullConfigsModel {
 				switch (type) {
 					case "Password":
 						if (textContent != null) {
-							String encrypted = new PasswordDecrypter().encrypt(textContent);
+							String encrypted = new PasswordDecrypter(PasswordDecrypterServiceProviderFactory.getInstance().getProvider()).encrypt(textContent);
 							valueNode.setTextContent(encrypted);
 						};
 						break;

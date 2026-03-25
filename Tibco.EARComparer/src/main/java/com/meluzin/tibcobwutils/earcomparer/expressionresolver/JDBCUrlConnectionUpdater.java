@@ -15,6 +15,7 @@ import com.meluzin.tibcobwutils.deploymentrepository.structure.GlobalVariables;
 import com.meluzin.tibcobwutils.deploymentrepository.structure.ItemType;
 import com.meluzin.tibcobwutils.deploymentrepository.structure.impl.ConfigImpl;
 import com.meluzin.tibcobwutils.deploymentrepository.structure.impl.PasswordDecrypter;
+import com.meluzin.tibcobwutils.deploymentrepository.structure.impl.PasswordDecrypterServiceProviderFactory;
 import com.meluzin.tibcobwutils.deploymentrepository.structure.impl.RepositoryImpl;
 import com.meluzin.tibcobwutils.earcomparer.fullconfig.model.FullConfigsModel;
 import com.meluzin.tibcobwutils.earcomparer.fullconfig.model.SDKPropertiesLoader;
@@ -77,7 +78,7 @@ public class JDBCUrlConnectionUpdater {
 			if (!resolve.isPresent()) throw new RuntimeException("Could not resolver variable: " + varRelativePath);
 			String resolvedValue = valueResolver.resolve(resolve.get());
 			if ("Password".equals(resolve.get().getType())) {
-				resolvedValue = new PasswordDecrypter().decrypt(resolvedValue);
+				resolvedValue = new PasswordDecrypter(PasswordDecrypterServiceProviderFactory.getInstance().getProvider()).decrypt(resolvedValue);
 			}
 			m.appendReplacement(sb, resolvedValue.replace("{", "\\{").replace("}", "\\}").replace("$", "\\$"));
 		}

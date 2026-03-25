@@ -19,13 +19,17 @@ import com.meluzin.functional.Log;
 
 public class PasswordDecrypter {
 	private static final Logger log = Log.get();
-	private static final byte[] TIBCO_SECRET = { 28, -89, -101, -111, 91, -113, 26, -70, 98, -80, -23, -53, -118, 93, -83, -17,
-			28, -89, -101, -111, 91, -113, 26, -70 };
-	public static void main(String[] args) {
-		System.out.println(new PasswordDecrypter().decrypt("#!fZHnt+lQSQ4WrHxwaz2Bi6nPwspkfw5Qk6uDuF/xjwhE6TRjX+SCXnlaD+qDUYQ4"));
+	private PasswordDecrypterSecretProvider provider; 
+	
+	public PasswordDecrypter(PasswordDecrypterSecretProvider provider) {
+		this.provider = provider;
+	}
+	public PasswordDecrypterSecretProvider getProvider() {
+		return provider;
 	}
 	public String decrypt(String encrypted) {
 		if (encrypted == null || !encrypted.startsWith("#!")) return encrypted;
+		byte[] secretKey = getSecretKey();
 		try {
 			
 			synchronized (PasswordDecrypter.class) {
@@ -36,7 +40,7 @@ public class PasswordDecrypter {
 			byte[] arrayOfByte = new byte[blockSize];
 
 			readIV(base64EncryptedBytes, arrayOfByte);
-			Key key = new RawKey("DESede", Arrays.copyOf(TIBCO_SECRET, TIBCO_SECRET.length));
+			Key key = new RawKey("DESede", secretKey);
 			cipher.init(Cipher.DECRYPT_MODE , (Key) key, new IvParameterSpec(arrayOfByte));
 			char[] decrypted = (decrypt(base64EncryptedBytes, blockSize, cipher));
 			String string = new String(decrypted);
@@ -45,12 +49,16 @@ public class PasswordDecrypter {
 			return string;
 			}
 		} catch (Exception e) {
-			log.log(Level.WARNING, "Cannot decrypt value: "+encrypted, e);
+			log.log(Level.WARNING, "Cannot decrypt value: "+encrypted+", error: "+e.getMessage());
 			return encrypted;
 		}
 	}
+	private byte[] getSecretKey() {
+		return Arrays.copyOf(provider.getSecret(), provider.getSecret().length);
+	}
 
 	public String encrypt(String decrypted) {
+		byte[] secretKey = getSecretKey();	
 		try {
 
 			Cipher cipher = Cipher.getInstance("DESede/CBC/PKCS5Padding", "SunJCE");;
@@ -59,7 +67,7 @@ public class PasswordDecrypter {
 			SecureRandom.getInstance("SHA1PRNG").nextBytes(randomBytes);
 
 //			readIV(paramArrayOfByte1, arrayOfByte);
-			Key rawKey = new RawKey("DESede", Arrays.copyOf(TIBCO_SECRET, TIBCO_SECRET.length));
+			Key rawKey = new RawKey("DESede", secretKey);
 			cipher.init(Cipher.ENCRYPT_MODE, (Key) rawKey, new IvParameterSpec(randomBytes));
 //			char[] decrypted = (decrypt(paramArrayOfByte1, i, localCipher));
 
@@ -83,7 +91,7 @@ public class PasswordDecrypter {
 			String encrypted = Base64.getEncoder().encodeToString(finalBytes);
 			return new String("#!" + encrypted);
 		} catch (Exception e) {
-			log.log(Level.WARNING, "Cannot decrypt", e);
+			log.log(Level.WARNING, "Cannot encrypt", e);
 			return decrypted;
 		}
 	}
