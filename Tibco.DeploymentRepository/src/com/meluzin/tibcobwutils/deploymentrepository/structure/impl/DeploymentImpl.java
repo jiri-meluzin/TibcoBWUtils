@@ -102,14 +102,13 @@ public class DeploymentImpl implements Deployment {
 		File file = itemAbsolutePath.toFile();
 		if (file.exists()) {
 			if (file.isDirectory()) {
-				File[] listFiles = file.listFiles();
-				if (listFiles.length == 1) {
-					File dotFolderFile = listFiles[0];
-					if (".folder".equals(dotFolderFile.getName())) {
-						boolean deleteDotFolder = dotFolderFile.delete();
-						Log.get().info("removed file ("+deleteDotFolder+") " + dotFolderFile);
-					}
+				try {
+					org.apache.commons.io.FileUtils.deleteDirectory(file);
+					Log.get().info("removed directory " + itemAbsolutePath);
+				} catch (IOException e) {
+					throw new RuntimeException("Could not remove directory (" + itemAbsolutePath + ")", e);
 				}
+				return itemAbsolutePath;
 			}
 			boolean delete = file.delete();			
 			Log.get().info("removed file ("+delete+") " + itemAbsolutePath);
