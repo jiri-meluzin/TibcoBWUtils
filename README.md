@@ -3,7 +3,7 @@ Set of tools for manipulation with Tibco BusinessWorks 5 source codes
 
 [![Build status](https://travis-ci.com/jiri-meluzin/TibcoBWUtils.svg?branch=master)](https://travis-ci.com/jiri-meluzin/TibcoBWUtils)
 
-A multi-module Maven project (Java, groupId `io.github.jiri-meluzin`, version 1.3) that helps build, compare and
+A multi-module Maven project (Java, groupId `io.github.jiri-meluzin`, version 1.4) that helps build, compare and
 validate TIBCO BusinessWorks 5 projects, EAR files and deployment configuration, typically from a CI server (e.g. Jenkins).
 All command line tools use [argparse4j](https://argparse4j.github.io/) with single-dash options (e.g. `-old`, `-new`).
 

@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>io.github.jiri-meluzin</groupId>
 		<artifactId>io.github.jiri-meluzin.tibcobwutils</artifactId>
-		<version>1.3</version>
+		<version>1.4</version>
 	</parent>
 	
 	<artifactId>io.github.jiri-meluzin.tibcobwutils.earcomparer</artifactId>
@@ -85,7 +85,7 @@
 		<dependency>
 			<groupId>io.github.jiri-meluzin</groupId>
 			<artifactId>io.github.jiri-meluzin.tibcobwutils.deploymentrepository</artifactId>
-			<version>1.3</version>
+			<version>1.4</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
